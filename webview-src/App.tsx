@@ -14,6 +14,7 @@ import '@xyflow/react/dist/style.css';
 import dagre from 'dagre';
 
 import { CustomNode } from './CustomNode';
+import { ContextMenu } from './ContextMenu';
 import { useDiagramStore, DiagramNode, DiagramEdge } from './store';
 import { serializeToMermaid, parseFromMermaid, MermaidConfig } from './mermaidSerializer';
 
@@ -53,6 +54,9 @@ export function App() {
   const [previewContent, setPreviewContent] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [themeColors, setThemeColors] = useState<VsCodeThemeColors | null>(null);
+  
+  // 右键菜单状态
+  const [contextMenu, setContextMenu] = useState<{ x: number; y: number; nodeId?: string } | null>(null);
   
   const [config] = useState<MermaidConfig>({
     direction: 'TB',
@@ -155,24 +159,28 @@ export function App() {
     [storeAddEdge]
   );
 
-  // Add node on double-click
+  // Add node on double-click (only when clicking on empty canvas)
   const onPaneDoubleClick = useCallback(
     (event: React.MouseEvent) => {
-      const newNode: DiagramNode = {
-        id: `node-${Date.now()}`,
-        position: {
-          x: event.clientX - 100,
-          y: event.clientY - 100,
-        },
-        data: { label: 'New Node', shape: 'rectangle' },
-        type: 'custom',
-      };
-      addNode(newNode);
-      
-      if (window.vscode) {
-        window.vscode.postMessage({
-          type: 'updateContent',
-        });
+      // Check if the click target is the pane background, not a node
+      const target = event.target as HTMLElement;
+      if (!target.closest('.react-flow__node')) {
+        const newNode: DiagramNode = {
+          id: `node-${Date.now()}`,
+          position: {
+            x: event.clientX - 100,
+            y: event.clientY - 100,
+          },
+          data: { label: 'New Node', shape: 'rectangle' },
+          type: 'custom',
+        };
+        addNode(newNode);
+        
+        if (window.vscode) {
+          window.vscode.postMessage({
+            type: 'updateContent',
+          });
+        }
       }
     },
     [addNode]
@@ -303,6 +311,67 @@ export function App() {
     navigator.clipboard.writeText(previewContent);
   };
 
+  // 右键菜单处理
+  const onNodeContextMenu = useCallback(
+    (event: any, node: DiagramNode) => {
+      event.preventDefault();
+      setContextMenu({
+        x: event.clientX,
+        y: event.clientY,
+        nodeId: node.id,
+      });
+    },
+    []
+  );
+
+  const onPaneContextMenu = useCallback(
+    (event: any) => {
+      event.preventDefault();
+      setContextMenu({
+        x: event.clientX,
+        y: event.clientY,
+      });
+    },
+    []
+  );
+
+  const handleColorChange = useCallback(
+    (color: string) => {
+      if (contextMenu?.nodeId) {
+        updateNode(contextMenu.nodeId, {
+          style: {
+            fill: color || undefined,
+          },
+        });
+        if (window.vscode) {
+          window.vscode.postMessage({ type: 'updateContent' });
+        }
+      }
+    },
+    [contextMenu, updateNode]
+  );
+
+  const handleShapeChange = useCallback(
+    (shape: string) => {
+      if (contextMenu?.nodeId) {
+        updateNode(contextMenu.nodeId, { shape });
+        if (window.vscode) {
+          window.vscode.postMessage({ type: 'updateContent' });
+        }
+      }
+    },
+    [contextMenu, updateNode]
+  );
+
+  const handleDeleteNode = useCallback(() => {
+    if (contextMenu?.nodeId) {
+      deleteNodes([contextMenu.nodeId]);
+      if (window.vscode) {
+        window.vscode.postMessage({ type: 'updateContent' });
+      }
+    }
+  }, [contextMenu, deleteNodes]);
+
   return (
     <div className="app-container">
       <div className="toolbar">
@@ -324,6 +393,8 @@ export function App() {
             onEdgesChange={onEdgesChange}
             onConnect={onConnect}
             onDoubleClick={onPaneDoubleClick}
+            onNodeContextMenu={onNodeContextMenu}
+            onPaneContextMenu={onPaneContextMenu}
             nodeTypes={nodeTypes}
             fitView
             attributionPosition="bottom-right"
@@ -331,6 +402,18 @@ export function App() {
             <Controls />
             <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
           </ReactFlow>
+          
+          {contextMenu && (
+            <ContextMenu
+              x={contextMenu.x}
+              y={contextMenu.y}
+              nodeId={contextMenu.nodeId}
+              onClose={() => setContextMenu(null)}
+              onColorChange={handleColorChange}
+              onShapeChange={handleShapeChange}
+              onDelete={handleDeleteNode}
+            />
+          )}
         </div>
 
         {previewVisible && (

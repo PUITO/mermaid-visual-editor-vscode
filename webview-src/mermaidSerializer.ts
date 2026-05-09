@@ -93,9 +93,11 @@ export function parseFromMermaid(code: string): { nodes: any[]; edges: any[] } {
   
   const nodeRegex = /\s*(\w+)\s*[\[\(\{\[]+/;
   const edgeRegex = /(-\.?->|==>)/;
+  const styleRegex = /style\s+(\w+)\s+fill:([^,]+),stroke:([^,]+),color:([^\s]+)/;
   
   let nodeId = 1;
   const nodeMap = new Map<string, string>();
+  const nodeStyles = new Map<string, { fill?: string; stroke?: string; color?: string }>();
   
   // 形状映射：从 Mermaid 语法到内部形状名称
   const shapeDetectionMap: Record<string, string> = {
@@ -111,9 +113,24 @@ export function parseFromMermaid(code: string): { nodes: any[]; edges: any[] } {
     '{': 'diamond',
   };
   
+  // 第一遍：解析样式定义
   lines.forEach((line) => {
     const trimmed = line.trim();
-    if (!trimmed || trimmed.startsWith('%%')) return;
+    const styleMatch = trimmed.match(styleRegex);
+    if (styleMatch) {
+      const nodeId = styleMatch[1];
+      nodeStyles.set(nodeId, {
+        fill: styleMatch[2].trim(),
+        stroke: styleMatch[3].trim(),
+        color: styleMatch[4].trim(),
+      });
+    }
+  });
+  
+  // 第二遍：解析节点和边
+  lines.forEach((line) => {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith('%%') || trimmed.startsWith('style')) return;
     
     // Try to match node definition
     const nodeMatch = trimmed.match(/(\w+)\s*([\[\(\{\[][^\]]*[\]\)\}\]])/);
@@ -153,10 +170,17 @@ export function parseFromMermaid(code: string): { nodes: any[]; edges: any[] } {
           detectedShape = 'diamond';
         }
         
+        // 获取样式信息
+        const style = nodeStyles.get(id) || {};
+        
         nodes.push({
           id: nodeMap.get(id)!,
           position: { x: Math.random() * 500, y: Math.random() * 500 },
-          data: { label: label || id, shape: detectedShape },
+          data: { 
+            label: label || id, 
+            shape: detectedShape,
+            style: Object.keys(style).length > 0 ? style : undefined,
+          },
           type: 'custom',
         });
       }
