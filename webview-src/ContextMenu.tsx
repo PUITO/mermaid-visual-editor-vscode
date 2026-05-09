@@ -39,11 +39,9 @@ export function ContextMenu({ x, y, nodeId, onClose, onColorChange, onStrokeChan
     return () => document.removeEventListener('click', handleClick);
   }, [onClose]);
 
-  // 计算菜单位置，确保不会超出视口
-  const menuHeight = 600; // 预估菜单高度
+  // 动态计算菜单最大高度：从点击位置到视口底部的距离
   const viewportHeight = window.innerHeight;
-  const adjustedY = y + menuHeight > viewportHeight ? viewportHeight - menuHeight - 10 : y;
-  const finalY = Math.max(10, adjustedY); // 至少距离顶部 10px
+  const maxMenuHeight = viewportHeight - y - 10; // 距离底部留 10px 边距
 
   return (
     <div
@@ -51,13 +49,13 @@ export function ContextMenu({ x, y, nodeId, onClose, onColorChange, onStrokeChan
       style={{
         position: 'fixed',
         left: x,
-        top: finalY,
+        top: y,
         backgroundColor: 'var(--vscode-menu-background)',
         border: '1px solid var(--vscode-menu-border)',
         borderRadius: '4px',
         padding: '4px 0',
         minWidth: '200px',
-        maxHeight: 'calc(100vh - 20px)',
+        maxHeight: `${maxMenuHeight}px`,
         overflowY: 'auto',
         boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
         zIndex: 1000,
