@@ -75,6 +75,10 @@ export class MermaidEditorProvider implements vscode.CustomTextEditorProvider {
     webviewPanel.onDidDispose(() => {
       changeDocumentSubscription.dispose();
       themeSubscription.dispose();
+      
+      // 注意：不在这里再次保存，因为每次编辑操作都已经立即保存了
+      // onDidDispose 时 webview 可能已经销毁，发送消息会失败
+      // 依赖之前的即时保存机制即可
     });
 
     // 发送初始内容

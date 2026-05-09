@@ -170,10 +170,7 @@ export function App() {
   const autoLayout = useCallback(() => {
     const layoutedNodes = applyAutoLayout(nodes, edges, config.direction);
     setNodes(layoutedNodes);
-    
-    if (window.vscode) {
-      window.vscode.postMessage({ type: 'updateContent' });
-    }
+    // 不需要手动触发保存，useEffect 会自动监听 nodes 变化并保存
   }, [nodes, edges, config.direction, setNodes, applyAutoLayout]);
 
   // Handle connections with auto layout
@@ -197,12 +194,7 @@ export function App() {
       // 连接后自动布局
       setTimeout(() => autoLayout(), 50);
       
-      // Notify VSCode
-      if (window.vscode) {
-        window.vscode.postMessage({
-          type: 'updateContent',
-        });
-      }
+      // 不需要手动触发保存，useEffect 会自动监听 edges 变化并保存
     },
     [storeAddEdge, autoLayout, nodes]
   );
@@ -291,6 +283,28 @@ export function App() {
     }
   }, [nodes, edges, config]);
 
+  // 监听节点和边的变化，立即触发保存（防止快速关闭时内容丢失）
+  useEffect(() => {
+    if (nodes.length === 0 && edges.length === 0) {
+      return; // 初始状态，不触发保存
+    }
+    
+    // 使用 requestAnimationFrame 确保在下一渲染帧前执行
+    if (window.vscode) {
+      requestAnimationFrame(() => {
+        try {
+          const mermaidCode = serializeToMermaid(nodes, edges, config);
+          window.vscode.postMessage({
+            type: 'updateContent',
+            content: mermaidCode,
+          });
+        } catch (err) {
+          console.error('Failed to save on change:', err);
+        }
+      });
+    }
+  }, [nodes, edges, config]);
+
   // Load initial content from VSCode and apply auto layout
   useEffect(() => {
     if (window.vscode) {
@@ -337,6 +351,27 @@ export function App() {
               window.vscode.postMessage({ type: 'updateContent' });
             }
           }, 100);
+        }
+        
+        // 处理保存请求（关闭前触发）
+        if (message.type === 'requestSave') {
+          try {
+            const mermaidCode = serializeToMermaid(nodes, edges, config);
+            if (window.vscode) {
+              window.vscode.postMessage({
+                type: 'saveContent',
+                content: mermaidCode,
+              });
+            }
+          } catch (err: any) {
+            console.error('Failed to serialize content:', err);
+            if (window.vscode) {
+              window.vscode.postMessage({
+                type: 'saveContent',
+                content: '',
+              });
+            }
+          }
         }
       };
       
@@ -416,12 +451,7 @@ export function App() {
             fill: color || undefined,  // 只更新 fill
           },
         });
-        // 立即同步触发保存，避免关闭文件时内容丢失
-        if (window.vscode) {
-          requestAnimationFrame(() => {
-            window.vscode.postMessage({ type: 'updateContent' });
-          });
-        }
+        // 不需要手动触发保存，useEffect 会自动监听 nodes 变化并保存
       }
     },
     [contextMenu, updateNode, nodes]
@@ -431,12 +461,7 @@ export function App() {
     (shape: string) => {
       if (contextMenu?.nodeId) {
         updateNode(contextMenu.nodeId, { shape });
-        // 立即同步触发保存，避免关闭文件时内容丢失
-        if (window.vscode) {
-          requestAnimationFrame(() => {
-            window.vscode.postMessage({ type: 'updateContent' });
-          });
-        }
+        // 不需要手动触发保存，useEffect 会自动监听 nodes 变化并保存
       }
     },
     [contextMenu, updateNode]
@@ -445,12 +470,7 @@ export function App() {
   const handleDeleteNode = useCallback(() => {
     if (contextMenu?.nodeId) {
       deleteNodes([contextMenu.nodeId]);
-      // 立即同步触发保存，避免关闭文件时内容丢失
-      if (window.vscode) {
-        requestAnimationFrame(() => {
-          window.vscode.postMessage({ type: 'updateContent' });
-        });
-      }
+      // 不需要手动触发保存，useEffect 会自动监听 nodes 变化并保存
     }
   }, [contextMenu, deleteNodes]);
 
@@ -468,12 +488,7 @@ export function App() {
             stroke: stroke || undefined,  // 只更新 stroke
           },
         });
-        // 立即同步触发保存，避免关闭文件时内容丢失
-        if (window.vscode) {
-          requestAnimationFrame(() => {
-            window.vscode.postMessage({ type: 'updateContent' });
-          });
-        }
+        // 不需要手动触发保存，useEffect 会自动监听 nodes 变化并保存
       }
     },
     [contextMenu, updateNode, nodes]
@@ -493,12 +508,7 @@ export function App() {
             color: textColor || undefined,  // 只更新 color
           },
         });
-        // 立即同步触发保存，避免关闭文件时内容丢失
-        if (window.vscode) {
-          requestAnimationFrame(() => {
-            window.vscode.postMessage({ type: 'updateContent' });
-          });
-        }
+        // 不需要手动触发保存，useEffect 会自动监听 nodes 变化并保存
       }
     },
     [contextMenu, updateNode, nodes]
