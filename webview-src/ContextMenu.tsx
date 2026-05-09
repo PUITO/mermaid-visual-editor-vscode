@@ -4,6 +4,7 @@ interface ContextMenuProps {
   x: number;
   y: number;
   nodeId?: string;
+  edgeId?: string;  // 新增：边ID
   onClose: () => void;
   onColorChange: (color: string) => void;
   onStrokeChange: (stroke: string) => void;
@@ -32,7 +33,7 @@ const shapes = [
   { name: '圆柱体', value: 'cylinder' },
 ];
 
-export function ContextMenu({ x, y, nodeId, onClose, onColorChange, onStrokeChange, onTextColorChange, onShapeChange, onDelete }: ContextMenuProps) {
+export function ContextMenu({ x, y, nodeId, edgeId, onClose, onColorChange, onStrokeChange, onTextColorChange, onShapeChange, onDelete }: ContextMenuProps) {
   useEffect(() => {
     const handleClick = () => onClose();
     document.addEventListener('click', handleClick);
@@ -243,9 +244,44 @@ export function ContextMenu({ x, y, nodeId, onClose, onColorChange, onStrokeChan
         </>
       )}
       
-      {!nodeId && (
+      {edgeId && (
+        <>
+          <div style={{ padding: '8px 12px', borderBottom: '1px solid var(--vscode-menu-border)' }}>
+            <strong style={{ color: 'var(--vscode-menu-foreground)' }}>连接线设置</strong>
+          </div>
+          
+          <div style={{ borderTop: '1px solid var(--vscode-menu-border)', padding: '4px 0' }}>
+            <button
+              onClick={() => {
+                onDelete();
+                onClose();
+              }}
+              style={{
+                width: '100%',
+                padding: '6px 12px',
+                backgroundColor: 'transparent',
+                border: 'none',
+                color: 'var(--vscode-errorForeground)',
+                cursor: 'pointer',
+                textAlign: 'left',
+                fontSize: '13px',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = 'var(--vscode-list-hoverBackground)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = 'transparent';
+              }}
+            >
+              删除连接线
+            </button>
+          </div>
+        </>
+      )}
+      
+      {!nodeId && !edgeId && (
         <div style={{ padding: '8px 12px', color: 'var(--vscode-menu-foreground)' }}>
-          右键点击节点以编辑
+          右键点击节点或连接线以编辑
         </div>
       )}
     </div>

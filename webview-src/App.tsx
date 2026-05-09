@@ -56,7 +56,7 @@ export function App() {
   const [themeColors, setThemeColors] = useState<VsCodeThemeColors | null>(null);
   
   // 右键菜单状态
-  const [contextMenu, setContextMenu] = useState<{ x: number; y: number; nodeId?: string } | null>(null);
+  const [contextMenu, setContextMenu] = useState<{ x: number; y: number; nodeId?: string; edgeId?: string } | null>(null);
   
   const [config] = useState<MermaidConfig>({
     direction: 'TB',
@@ -427,6 +427,18 @@ export function App() {
     []
   );
 
+  const onEdgeContextMenu = useCallback(
+    (event: any, edge: DiagramEdge) => {
+      event.preventDefault();
+      setContextMenu({
+        x: event.clientX,
+        y: event.clientY,
+        edgeId: edge.id,
+      });
+    },
+    []
+  );
+
   const onPaneContextMenu = useCallback(
     (event: any) => {
       event.preventDefault();
@@ -473,6 +485,13 @@ export function App() {
       // 不需要手动触发保存，useEffect 会自动监听 nodes 变化并保存
     }
   }, [contextMenu, deleteNodes]);
+
+  const handleDeleteEdge = useCallback(() => {
+    if (contextMenu?.edgeId) {
+      deleteEdge(contextMenu.edgeId);
+      // 不需要手动触发保存，useEffect 会自动监听 edges 变化并保存
+    }
+  }, [contextMenu, deleteEdge]);
 
   // 处理边框颜色变化
   const handleStrokeChange = useCallback(
@@ -536,6 +555,7 @@ export function App() {
             onConnect={onConnect}
             onDoubleClick={onPaneDoubleClick}
             onNodeContextMenu={onNodeContextMenu}
+            onEdgeContextMenu={onEdgeContextMenu}
             onPaneContextMenu={onPaneContextMenu}
             nodeTypes={nodeTypes}
             fitView
@@ -550,12 +570,13 @@ export function App() {
               x={contextMenu.x}
               y={contextMenu.y}
               nodeId={contextMenu.nodeId}
+              edgeId={contextMenu.edgeId}
               onClose={() => setContextMenu(null)}
               onColorChange={handleColorChange}
               onStrokeChange={handleStrokeChange}
               onTextColorChange={handleTextColorChange}
               onShapeChange={handleShapeChange}
-              onDelete={handleDeleteNode}
+              onDelete={contextMenu.edgeId ? handleDeleteEdge : handleDeleteNode}
             />
           )}
         </div>
