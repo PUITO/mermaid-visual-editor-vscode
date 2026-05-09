@@ -47,11 +47,6 @@ export function serializeToMermaid(
 ): string {
   let mermaidCode = `graph ${config.direction}\n`;
   
-  // Add theme directive
-  if (config.theme !== 'default') {
-    mermaidCode = `%%{init: {'theme':'${config.theme}'}}%%\n${mermaidCode}`;
-  }
-  
   // Generate node definitions
   nodes.forEach((node) => {
     const nodeId = node.id.replace(/[^a-zA-Z0-9]/g, '_');
@@ -80,6 +75,18 @@ export function serializeToMermaid(
     const label = edge.data?.label ? `|${edge.data.label}|` : '';
     
     mermaidCode += `    ${sourceId}${label}${edgeType} ${targetId}\n`;
+  });
+  
+  // Generate style definitions for nodes that have custom styles
+  nodes.forEach((node) => {
+    if (node.data.style && (node.data.style.fill || node.data.style.stroke || node.data.style.color)) {
+      const nodeId = node.id.replace(/[^a-zA-Z0-9]/g, '_');
+      const fill = node.data.style.fill || '#ffffff';
+      const stroke = node.data.style.stroke || '#000000';
+      const color = node.data.style.color || '#000000';
+      
+      mermaidCode += `    style ${nodeId} fill:${fill},stroke:${stroke},color:${color}\n`;
+    }
   });
   
   return mermaidCode.trim();
@@ -116,6 +123,9 @@ export function parseFromMermaid(code: string): { nodes: any[]; edges: any[] } {
   // 第一遍：解析样式定义
   lines.forEach((line) => {
     const trimmed = line.trim();
+    // 跳过空行、注释和 init 指令
+    if (!trimmed || trimmed.startsWith('%%') || trimmed.startsWith('graph')) return;
+    
     const styleMatch = trimmed.match(styleRegex);
     if (styleMatch) {
       const nodeId = styleMatch[1];
@@ -130,7 +140,8 @@ export function parseFromMermaid(code: string): { nodes: any[]; edges: any[] } {
   // 第二遍：解析节点和边
   lines.forEach((line) => {
     const trimmed = line.trim();
-    if (!trimmed || trimmed.startsWith('%%') || trimmed.startsWith('style')) return;
+    // 跳过空行、注释、init 指令、graph 声明和 style 语句
+    if (!trimmed || trimmed.startsWith('%%') || trimmed.startsWith('graph') || trimmed.startsWith('style')) return;
     
     // Try to match node definition
     const nodeMatch = trimmed.match(/(\w+)\s*([\[\(\{\[][^\]]*[\]\)\}\]])/);
