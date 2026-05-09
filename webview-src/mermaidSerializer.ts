@@ -80,16 +80,24 @@ export function serializeToMermaid(
   // Generate style definitions for nodes that have custom styles
   nodes.forEach((node) => {
     if (node.data.style) {
+      // 检查是否有任何非空的样式属性（明确区分 null/undefined 与空字符串）
       const hasCustomStyle = 
-        (node.data.style.fill && node.data.style.fill !== '') ||
-        (node.data.style.stroke && node.data.style.stroke !== '') ||
-        (node.data.style.color && node.data.style.color !== '');
+        (node.data.style.fill !== undefined && node.data.style.fill !== null && node.data.style.fill !== '') ||
+        (node.data.style.stroke !== undefined && node.data.style.stroke !== null && node.data.style.stroke !== '') ||
+        (node.data.style.color !== undefined && node.data.style.color !== null && node.data.style.color !== '');
       
       if (hasCustomStyle) {
         const nodeId = node.id.replace(/[^a-zA-Z0-9]/g, '_');
-        const fill = node.data.style.fill || '#ffffff';
-        const stroke = node.data.style.stroke || '#000000';
-        const color = node.data.style.color || '#000000';
+        // 只有当样式属性存在且非空时才使用，否则使用默认值
+        const fill = (node.data.style.fill !== undefined && node.data.style.fill !== null && node.data.style.fill !== '') 
+          ? node.data.style.fill 
+          : '#ffffff';
+        const stroke = (node.data.style.stroke !== undefined && node.data.style.stroke !== null && node.data.style.stroke !== '') 
+          ? node.data.style.stroke 
+          : '#000000';
+        const color = (node.data.style.color !== undefined && node.data.style.color !== null && node.data.style.color !== '') 
+          ? node.data.style.color 
+          : '#000000';
         
         mermaidCode += `    style ${nodeId} fill:${fill},stroke:${stroke},color:${color}\n`;
       }
@@ -107,7 +115,8 @@ export function parseFromMermaid(code: string): { nodes: any[]; edges: any[] } {
   
   const nodeRegex = /\s*(\w+)\s*[\[\(\{\[]+/;
   const edgeRegex = /(-\.?->|==>)/;
-  const styleRegex = /style\s+(\w+)\s+fill:([^,]+),stroke:([^,]+),color:(.+)/;
+  // 修复样式解析正则表达式：使用 ([^\s,]+) 匹配颜色值，避免捕获末尾空格
+  const styleRegex = /style\s+(\w+)\s+fill:([^\s,]+),stroke:([^\s,]+),color:([^\s]+)/;
   
   let nodeId = 1;
   const nodeMap = new Map<string, string>();
@@ -136,6 +145,7 @@ export function parseFromMermaid(code: string): { nodes: any[]; edges: any[] } {
     const styleMatch = trimmed.match(styleRegex);
     if (styleMatch) {
       const nodeId = styleMatch[1];
+      // 去除颜色值两端的空格（双重保险）
       nodeStyles.set(nodeId, {
         fill: styleMatch[2].trim(),
         stroke: styleMatch[3].trim(),
@@ -189,7 +199,7 @@ export function parseFromMermaid(code: string): { nodes: any[]; edges: any[] } {
         }
         
         // 获取样式信息
-        const style = nodeStyles.get(id) || {};
+        const style = nodeStyles.get(id);
         
         nodes.push({
           id: nodeMap.get(id)!,
@@ -197,7 +207,8 @@ export function parseFromMermaid(code: string): { nodes: any[]; edges: any[] } {
           data: { 
             label: label || id, 
             shape: detectedShape,
-            style: Object.keys(style).length > 0 ? style : undefined,
+            // 只有当样式存在时才设置，避免设置空对象
+            style: style ? style : undefined,
           },
           type: 'custom',
         });
