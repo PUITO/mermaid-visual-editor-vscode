@@ -14,9 +14,8 @@ const shapeStyles: Record<string, React.CSSProperties> = {
   rounded: { borderRadius: '10px' },
   stadium: { borderRadius: '50px' },
   diamond: { 
-    transform: 'rotate(45deg)',
-    width: '80px',
-    height: '80px',
+    clipPath: 'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)',
+    padding: '20px',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',

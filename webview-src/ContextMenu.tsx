@@ -24,8 +24,8 @@ const colors = [
 
 const shapes = [
   { name: '矩形', value: 'rectangle' },
-  { name: '圆角', value: 'rounded' },
-  { name: '体育场', value: 'stadium' },
+  { name: '圆角矩形', value: 'rounded' },
+  { name: '胶囊形', value: 'stadium' },
   { name: '菱形', value: 'diamond' },
   { name: '圆形', value: 'circle' },
   { name: '六边形', value: 'hexagon' },
