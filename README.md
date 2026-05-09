@@ -1,6 +1,13 @@
 # Mermaid Visual Editor for VSCode
 
+[![Version](https://img.shields.io/visual-studio-marketplace/v/PUITO.mermaid-visual-editor-vscode)](https://marketplace.visualstudio.com/items?itemName=PUITO.mermaid-visual-editor-vscode)
+[![Downloads](https://img.shields.io/visual-studio-marketplace/d/PUITO.mermaid-visual-editor-vscode)](https://marketplace.visualstudio.com/items?itemName=PUITO.mermaid-visual-editor-vscode)
+[![Rating](https://img.shields.io/visual-studio-marketplace/r/PUITO.mermaid-visual-editor-vscode)](https://marketplace.visualstudio.com/items?itemName=PUITO.mermaid-visual-editor-vscode)
+[![GitHub stars](https://img.shields.io/github/stars/PUITO/mermaid-visual-editor-vscode?style=social)](https://github.com/PUITO/mermaid-visual-editor-vscode)
+
 A Visual Studio Code extension that provides a visual drag-and-drop editor for Mermaid (.mmd) files with interactive diagram editing capabilities.
+
+**🔗 Repository**: [https://github.com/PUITO/mermaid-visual-editor-vscode](https://github.com/PUITO/mermaid-visual-editor-vscode)
 
 **Inspired by**: [Mermaid Visual Editor](https://github.com/saketkattu/mermaid-visual-editor) - A standalone web-based visual editor for Mermaid.js flowcharts.
 
@@ -74,6 +81,93 @@ Currently focused on **flowcharts** with more diagram types planned:
 
 - `Mermaid: Open Mermaid Visual Editor` - Open the visual editor for the current file
 - `Mermaid: Toggle Preview` - Toggle the preview panel
+
+## Installation
+
+### From VSCode Marketplace (Recommended)
+
+1. Open VSCode
+2. Go to Extensions view (`Ctrl+Shift+X` or `Cmd+Shift+X`)
+3. Search for "Mermaid Visual Editor" or visit: [Marketplace Link](https://marketplace.visualstudio.com/items?itemName=PUITO.mermaid-visual-editor-vscode)
+4. Click Install
+
+### From Open VSX Registry
+
+For VSCodium and other open-source editors:
+1. Visit [Open VSX](https://open-vsx.org/)
+2. Search for "Mermaid Visual Editor"
+3. Install from the extension page
+
+### Manual Installation (Offline)
+
+If you need to install from a `.vsix` file:
+
+1. Download the latest `.vsix` file from [GitHub Releases](https://github.com/PUITO/mermaid-visual-editor-vscode/releases)
+2. In VSCode, go to Extensions view
+3. Click the "..." menu in the top-right corner
+4. Select "Install from VSIX..."
+5. Choose the downloaded `.vsix` file
+
+## Development & Contributing
+
+See [PUBLISHING.md](./PUBLISHING.md) for detailed release process and GitHub Actions configuration.
+
+### Local Development
+
+```bash
+# Clone the repository
+git clone https://github.com/PUITO/mermaid-visual-editor-vscode.git
+cd mermaid-visual-editor-vscode
+
+# Install dependencies
+npm install
+
+# Compile TypeScript and build webview
+npm run compile
+
+# Run in development mode (F5 in VSCode)
+# Or watch for changes
+npm run watch
+npm run watch:webview
+```
+
+### Building for Release
+
+```bash
+# Compile and package
+npm run compile
+npx vsce package
+
+# This generates: mermaid-visual-editor-vscode-X.X.X.vsix
+```
+
+### Automated Releases with GitHub Actions
+
+This project uses GitHub Actions for automated releases:
+
+1. **CI Pipeline**: Automatically builds and tests on every push/PR
+2. **Release Pipeline**: Publishes to VSCode Marketplace and Open VSX when a version tag is pushed
+
+To trigger a release:
+```bash
+# Update version in package.json
+# Commit changes
+git add package.json
+git commit -m "Bump version to X.X.X"
+
+# Create and push tag
+git tag vX.X.X
+git push origin vX.X.X
+```
+
+GitHub Actions will automatically:
+- ✅ Build the project
+- ✅ Package as VSIX
+- ✅ Create GitHub Release with VSIX download
+- ✅ Publish to VSCode Marketplace
+- ✅ Publish to Open VSX Registry
+
+See [PUBLISHING.md](./PUBLISHING.md) for complete setup instructions.
 
 ## Requirements
 

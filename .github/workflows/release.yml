@@ -1,0 +1,76 @@
+name: Release and Publish
+
+on:
+  push:
+    tags:
+      - 'v*'  # 当推送版本标签时触发，如 v1.0.0
+  workflow_dispatch:  # 允许手动触发
+    inputs:
+      version:
+        description: '版本号 (例如: 1.0.0)'
+        required: true
+        type: string
+      publish_to_marketplace:
+        description: '发布到 VSCode Marketplace'
+        required: false
+        default: true
+        type: boolean
+      create_release:
+        description: '创建 GitHub Release'
+        required: false
+        default: true
+        type: boolean
+
+jobs:
+  build-and-publish:
+    name: Build and Publish
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Compile TypeScript
+        run: npm run compile
+      
+      - name: Package VSIX
+        run: npx vsce package --out mermaid-visual-editor-vscode.vsix
+      
+      - name: Upload VSIX as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: mermaid-visual-editor-vscode-vsix
+          path: mermaid-visual-editor-vscode.vsix
+          retention-days: 30
+      
+      - name: Create GitHub Release
+        if: github.event_name == 'push' || github.event.inputs.create_release == 'true'
+        uses: softprops/action-gh-release@v1
+        with:
+          files: mermaid-visual-editor-vscode.vsix
+          generate_release_notes: true
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Publish to VSCode Marketplace
+        if: github.event_name == 'push' || github.event.inputs.publish_to_marketplace == 'true'
+        run: npx vsce publish --packagePath mermaid-visual-editor-vscode.vsix
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+      
+      - name: Publish to Open VSX Registry
+        if: github.event_name == 'push' || github.event.inputs.publish_to_marketplace == 'true'
+        run: npx ovsx publish --packagePath mermaid-visual-editor-vscode.vsix
+        env:
+          OVSX_PAT: ${{ secrets.OVSX_PAT }}

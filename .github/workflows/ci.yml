@@ -1,0 +1,53 @@
+name: CI Build and Test
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build:
+    name: Build and Lint
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Lint
+        run: npm run lint
+      
+      - name: Compile TypeScript
+        run: npm run compile
+      
+      - name: Verify build output
+        run: |
+          if [ ! -f "out/extension.js" ]; then
+            echo "Error: extension.js not found in out directory"
+            exit 1
+          fi
+          if [ ! -f "out/webview.js" ]; then
+            echo "Error: webview.js not found in out directory"
+            exit 1
+          fi
+          echo "Build successful!"
+      
+      - name: Package VSIX (test)
+        run: npx vsce package --out test-extension.vsix
+      
+      - name: Upload VSIX artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-extension-vsix
+          path: test-extension.vsix
+          retention-days: 7

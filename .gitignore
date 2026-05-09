@@ -112,3 +112,6 @@ Thumbs.db
 
 # Other optional files
 .cache/
+
+# bulid vsix file
+*.vsix

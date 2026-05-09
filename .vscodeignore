@@ -1,0 +1,34 @@
+# Dependencies
+node_modules/
+
+# Git
+.git/
+.gitignore
+
+# GitHub Actions
+.github/
+
+# VSCode settings
+.vscode/
+
+# Documentation
+*.md
+!README.md
+
+# Examples
+example-*.mmd
+
+# Test files
+**/*.test.ts
+**/*.spec.ts
+
+# Config files
+tsconfig.json
+webpack.config.js
+
+# Lingma
+.lingma/
+
+# Source files (keep compiled output)
+src/
+webview-src/
