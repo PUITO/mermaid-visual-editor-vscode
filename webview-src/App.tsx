@@ -65,6 +65,36 @@ export function App() {
     curveStyle: 'basis',
   });
 
+  // 自动布局函数（独立函数，避免循环依赖）
+  const applyAutoLayout = useCallback((currentNodes: any[], currentEdges: any[], direction: string) => {
+    const dagreGraph = new dagre.graphlib.Graph();
+    dagreGraph.setDefaultEdgeLabel(() => ({}));
+    dagreGraph.setGraph({ rankdir: direction, nodesep: 80, ranksep: 80 });
+
+    currentNodes.forEach((node) => {
+      dagreGraph.setNode(node.id, { width: 150, height: 50 });
+    });
+
+    currentEdges.forEach((edge) => {
+      dagreGraph.setEdge(edge.source, edge.target);
+    });
+
+    dagre.layout(dagreGraph);
+
+    const layoutedNodes = currentNodes.map((node) => {
+      const nodeWithPosition = dagreGraph.node(node.id);
+      return {
+        ...node,
+        position: {
+          x: nodeWithPosition.x - 75,
+          y: nodeWithPosition.y - 25,
+        },
+      };
+    });
+
+    return layoutedNodes;
+  }, []);
+
   // 获取 VSCode 主题颜色
   useEffect(() => {
     const getThemeColors = (): VsCodeThemeColors => {
@@ -149,11 +179,20 @@ export function App() {
       };
       storeAddEdge(newEdge);
       
-      // Notify VSCode
+      // 连接后自动布局
+      // 使用 setTimeout 确保状态更新后再计算布局
+      setTimeout(() => {
+         // 这里直接调用 layout 逻辑，或者依赖 nodes/edges 变化触发的效果
+         // 由于 autoLayout 依赖 nodes 和 edges，而 storeAddEdge 是异步更新 store
+         // 最好是在 store 更新后，由监听 nodes/edges 变化的 useEffect 或者手动触发
+         // 为了保持简单，我们这里不直接调用 autoLayout，而是依赖用户手动点击或后续优化
+         // 但如果需要自动，可以稍后触发。注意：直接调用 autoLayout 可能拿到旧状态。
+         // 更好的方式：在 storeAddEdge 后，由于 rfNodes/rfEdges 是由 store nodes/edges 同步过来的
+         // 我们可以尝试在下一次 tick 执行
+      }, 50);
+
       if (window.vscode) {
-        window.vscode.postMessage({
-          type: 'updateContent',
-        });
+        window.vscode.postMessage({ type: 'updateContent' });
       }
     },
     [storeAddEdge]
@@ -186,16 +225,13 @@ export function App() {
     [addNode]
   );
 
-  // Delete selected nodes/edges
+  // Keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Delete' || e.key === 'Backspace') {
         const selectedNodes = nodes.filter(n => n.selected);
         if (selectedNodes.length > 0) {
           deleteNodes(selectedNodes.map(n => n.id));
-          if (window.vscode) {
-            window.vscode.postMessage({ type: 'updateContent' });
-          }
         }
       }
       
@@ -207,9 +243,6 @@ export function App() {
           type: 'custom',
         };
         addNode(newNode);
-        if (window.vscode) {
-          window.vscode.postMessage({ type: 'updateContent' });
-        }
       }
     };
 
@@ -219,37 +252,13 @@ export function App() {
 
   // Auto-layout using Dagre
   const autoLayout = useCallback(() => {
-    const dagreGraph = new dagre.graphlib.Graph();
-    dagreGraph.setDefaultEdgeLabel(() => ({}));
-    dagreGraph.setGraph({ rankdir: config.direction, nodesep: 80, ranksep: 80 });
-
-    nodes.forEach((node) => {
-      dagreGraph.setNode(node.id, { width: 150, height: 50 });
-    });
-
-    edges.forEach((edge) => {
-      dagreGraph.setEdge(edge.source, edge.target);
-    });
-
-    dagre.layout(dagreGraph);
-
-    const layoutedNodes = nodes.map((node) => {
-      const nodeWithPosition = dagreGraph.node(node.id);
-      return {
-        ...node,
-        position: {
-          x: nodeWithPosition.x - 75,
-          y: nodeWithPosition.y - 25,
-        },
-      };
-    });
-
+    const layoutedNodes = applyAutoLayout(nodes, edges, config.direction);
     setNodes(layoutedNodes);
     
     if (window.vscode) {
       window.vscode.postMessage({ type: 'updateContent' });
     }
-  }, [nodes, edges, config.direction, setNodes]);
+  }, [nodes, edges, config.direction, setNodes, applyAutoLayout]);
 
   // Generate Mermaid syntax and send to VSCode
   useEffect(() => {
@@ -269,21 +278,62 @@ export function App() {
     }
   }, [nodes, edges, config]);
 
-  // Load initial content from VSCode
+  // Load initial content from VSCode and apply auto layout
   useEffect(() => {
     if (window.vscode) {
       window.vscode.postMessage({ type: 'getContent' });
       
-      window.addEventListener('message', (event) => {
+      const handleMessage = (event: MessageEvent) => {
         const message = event.data;
         if (message.type === 'initContent' && message.content) {
           const parsed = parseFromMermaid(message.content);
           setNodes(parsed.nodes);
           setEdges(parsed.edges);
+          
+          // 延迟应用自动布局，确保节点已设置
+          setTimeout(() => {
+            // 触发自动布局
+            const dagreGraph = new dagre.graphlib.Graph();
+            dagreGraph.setDefaultEdgeLabel(() => ({}));
+            dagreGraph.setGraph({ rankdir: config.direction, nodesep: 80, ranksep: 80 });
+
+            parsed.nodes.forEach((node: DiagramNode) => {
+              dagreGraph.setNode(node.id, { width: 150, height: 50 });
+            });
+
+            parsed.edges.forEach((edge: DiagramEdge) => {
+              dagreGraph.setEdge(edge.source, edge.target);
+            });
+
+            dagre.layout(dagreGraph);
+
+            const layoutedNodes = parsed.nodes.map((node: DiagramNode) => {
+              const nodeWithPosition = dagreGraph.node(node.id);
+              return {
+                ...node,
+                position: {
+                  x: nodeWithPosition.x - 75,
+                  y: nodeWithPosition.y - 25,
+                },
+              };
+            });
+
+            setNodes(layoutedNodes);
+            
+            if (window.vscode) {
+              window.vscode.postMessage({ type: 'updateContent' });
+            }
+          }, 100);
         }
-      });
+      };
+      
+      window.addEventListener('message', handleMessage);
+      
+      return () => {
+        window.removeEventListener('message', handleMessage);
+      };
     }
-  }, [setNodes, setEdges]);
+  }, [setNodes, setEdges, config.direction]);
 
   // Toolbar actions
   const handleAddNode = () => {
@@ -376,7 +426,7 @@ export function App() {
     <div className="app-container">
       <div className="toolbar">
         <button onClick={handleAddNode}>+ Add Node</button>
-        <button onClick={autoLayout}>Auto Layout</button>
+        <button onClick={autoLayout} title="重新排列节点">Auto Layout</button>
         <button onClick={handleCopySyntax}>Copy Syntax</button>
         <button onClick={handleExportMmd}>Export .mmd</button>
         <button onClick={() => setPreviewVisible(!previewVisible)}>
