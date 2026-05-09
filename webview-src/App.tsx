@@ -393,8 +393,11 @@ export function App() {
             fill: color || undefined,
           },
         });
+        // 立即同步触发保存，避免关闭文件时内容丢失
         if (window.vscode) {
-          window.vscode.postMessage({ type: 'updateContent' });
+          requestAnimationFrame(() => {
+            window.vscode.postMessage({ type: 'updateContent' });
+          });
         }
       }
     },
@@ -405,8 +408,11 @@ export function App() {
     (shape: string) => {
       if (contextMenu?.nodeId) {
         updateNode(contextMenu.nodeId, { shape });
+        // 立即同步触发保存，避免关闭文件时内容丢失
         if (window.vscode) {
-          window.vscode.postMessage({ type: 'updateContent' });
+          requestAnimationFrame(() => {
+            window.vscode.postMessage({ type: 'updateContent' });
+          });
         }
       }
     },
@@ -416,8 +422,11 @@ export function App() {
   const handleDeleteNode = useCallback(() => {
     if (contextMenu?.nodeId) {
       deleteNodes([contextMenu.nodeId]);
+      // 立即同步触发保存，避免关闭文件时内容丢失
       if (window.vscode) {
-        window.vscode.postMessage({ type: 'updateContent' });
+        requestAnimationFrame(() => {
+          window.vscode.postMessage({ type: 'updateContent' });
+        });
       }
     }
   }, [contextMenu, deleteNodes]);

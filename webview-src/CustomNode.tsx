@@ -60,16 +60,19 @@ export function CustomNode({ data, id, selected }: CustomNodeProps) {
 
   const handleBlur = () => {
     setIsEditing(false);
+    
     // 先更新 store 中的节点数据
     updateNode(id, { label });
     
-    // 延迟触发保存，确保状态更新完成
+    // 立即同步触发保存，确保内容不会丢失
+    // 注意：这里不使用 setTimeout，避免关闭文件时消息未发送
     if (window.vscode) {
-      setTimeout(() => {
+      // 使用 requestAnimationFrame 确保 DOM 更新后再发送
+      requestAnimationFrame(() => {
         window.vscode.postMessage({ 
           type: 'updateContent' 
         });
-      }, 50);
+      });
     }
   };
 
