@@ -1,0 +1,112 @@
+{
+  "name": "mermaid-visual-editor-vscode",
+  "displayName": "Mermaid Visual Editor",
+  "description": "A visual drag-and-drop editor for Mermaid (.mmd) files. Draw diagrams visually with an interactive canvas and export clean .mmd syntax.",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other",
+    "Visualization",
+    "Programming Languages"
+  ],
+  "keywords": [
+    "mermaid",
+    "diagram",
+    "mmd",
+    "visual editor",
+    "flowchart",
+    "drag and drop",
+    "react-flow"
+  ],
+  "activationEvents": [
+    "onLanguage:mermaid",
+    "onCommand:mermaid-visual-editor.openEditor"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "languages": [
+      {
+        "id": "mermaid",
+        "aliases": [
+          "Mermaid",
+          "mermaid"
+        ],
+        "extensions": [
+          ".mmd",
+          ".mermaid"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "customEditors": [
+      {
+        "viewType": "mermaidVisualEditor.editor",
+        "displayName": "Mermaid Visual Editor",
+        "selector": [
+          {
+            "filenamePattern": "*.mmd"
+          },
+          {
+            "filenamePattern": "*.mermaid"
+          }
+        ],
+        "priority": "default"
+      }
+    ],
+    "commands": [
+      {
+        "command": "mermaid-visual-editor.openEditor",
+        "title": "Open Mermaid Visual Editor",
+        "category": "Mermaid"
+      },
+      {
+        "command": "mermaid-visual-editor.togglePreview",
+        "title": "Toggle Preview",
+        "category": "Mermaid"
+      }
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "when": "resourceExtname == .mmd || resourceExtname == .mermaid",
+          "command": "mermaid-visual-editor.togglePreview",
+          "group": "navigation"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./ && npm run build:webview",
+    "build:webview": "webpack --mode production",
+    "watch": "tsc -watch -p ./",
+    "watch:webview": "webpack --mode development --watch",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.85.0",
+    "@types/node": "^20.0.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.0.0",
+    "typescript": "^5.0.0",
+    "@vscode/test-electron": "^2.3.0",
+    "ts-loader": "^9.5.0",
+    "webpack": "^5.89.0",
+    "webpack-cli": "^5.1.0",
+    "css-loader": "^6.8.0",
+    "style-loader": "^3.3.0"
+  },
+  "dependencies": {
+    "mermaid": "^10.6.0",
+    "@xyflow/react": "^11.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "zustand": "^4.4.0",
+    "dagre": "^0.8.5"
+  }
+}

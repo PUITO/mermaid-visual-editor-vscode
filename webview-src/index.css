@@ -1,0 +1,159 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  overflow: hidden;
+  background-color: var(--vscode-editor-background);
+  color: var(--vscode-editor-foreground);
+}
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-color: var(--vscode-editor-background);
+  color: var(--vscode-editor-foreground);
+}
+
+.toolbar {
+  display: flex;
+  gap: 8px;
+  padding: 8px;
+  background-color: var(--vscode-toolbar-background);
+  border-bottom: 1px solid var(--vscode-panel-border);
+  align-items: center;
+}
+
+.toolbar button {
+  background-color: var(--vscode-button-background);
+  color: var(--vscode-button-foreground);
+  border: none;
+  padding: 6px 12px;
+  cursor: pointer;
+  border-radius: 2px;
+  font-size: 13px;
+  transition: background-color 0.2s;
+}
+
+.toolbar button:hover {
+  background-color: var(--vscode-button-hoverBackground);
+}
+
+.toolbar button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.main-content {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+.canvas-container {
+  flex: 1;
+  position: relative;
+  background-color: var(--vscode-editor-background);
+}
+
+.preview-panel {
+  width: 400px;
+  border-left: 1px solid var(--vscode-panel-border);
+  display: flex;
+  flex-direction: column;
+  background-color: var(--vscode-editor-background);
+}
+
+.preview-header {
+  padding: 8px 12px;
+  background-color: var(--vscode-panelSectionHeader-background);
+  color: var(--vscode-panelSectionHeader-foreground);
+  font-weight: bold;
+  border-bottom: 1px solid var(--vscode-panel-border);
+}
+
+.preview-content {
+  flex: 1;
+  overflow: auto;
+  padding: 16px;
+  background-color: var(--vscode-editor-background);
+  color: var(--vscode-editor-foreground);
+}
+
+.error-message {
+  color: var(--vscode-errorForeground);
+  padding: 12px;
+  background-color: var(--vscode-inputValidation-errorBackground);
+  border: 1px solid var(--vscode-inputValidation-errorBorder);
+  margin: 8px;
+  border-radius: 2px;
+  font-size: 13px;
+}
+
+.react-flow__node {
+  font-size: 14px;
+}
+
+.react-flow__handle {
+  width: 8px;
+  height: 8px;
+}
+
+.node-label-input {
+  width: 100%;
+  padding: 4px;
+  border: 1px solid var(--vscode-input-border);
+  border-radius: 2px;
+  font-size: 14px;
+  text-align: center;
+  background-color: var(--vscode-input-background);
+  color: var(--vscode-input-foreground);
+}
+
+/* React Flow 主题适配 */
+.react-flow {
+  background-color: var(--vscode-editor-background) !important;
+}
+
+.react-flow__controls {
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.1);
+}
+
+.react-flow__controls-button {
+  background-color: var(--vscode-button-background);
+  border: 1px solid var(--vscode-button-border);
+  color: var(--vscode-button-foreground);
+  transition: background-color 0.2s;
+}
+
+.react-flow__controls-button:hover {
+  background-color: var(--vscode-button-hoverBackground);
+}
+
+.react-flow__attribution {
+  background-color: var(--vscode-editor-background);
+  color: var(--vscode-editor-foreground);
+}
+
+/* 滚动条样式 */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--vscode-scrollbarSlider-background);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--vscode-scrollbarSlider-hoverBackground);
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--vscode-scrollbarSlider-activeBackground);
+}
