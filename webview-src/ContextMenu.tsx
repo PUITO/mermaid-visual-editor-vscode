@@ -6,6 +6,8 @@ interface ContextMenuProps {
   nodeId?: string;
   onClose: () => void;
   onColorChange: (color: string) => void;
+  onStrokeChange: (stroke: string) => void;
+  onTextColorChange: (textColor: string) => void;
   onShapeChange: (shape: string) => void;
   onDelete: () => void;
 }
@@ -30,7 +32,7 @@ const shapes = [
   { name: '圆柱体', value: 'cylinder' },
 ];
 
-export function ContextMenu({ x, y, nodeId, onClose, onColorChange, onShapeChange, onDelete }: ContextMenuProps) {
+export function ContextMenu({ x, y, nodeId, onClose, onColorChange, onStrokeChange, onTextColorChange, onShapeChange, onDelete }: ContextMenuProps) {
   useEffect(() => {
     const handleClick = () => onClose();
     document.addEventListener('click', handleClick);
@@ -60,6 +62,7 @@ export function ContextMenu({ x, y, nodeId, onClose, onColorChange, onShapeChang
             <strong style={{ color: 'var(--vscode-menu-foreground)' }}>节点设置</strong>
           </div>
           
+          {/* 填充颜色 */}
           <div style={{ padding: '8px 12px' }}>
             <div style={{ marginBottom: '8px', color: 'var(--vscode-menu-foreground)', fontSize: '12px' }}>填充颜色:</div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
@@ -90,6 +93,83 @@ export function ContextMenu({ x, y, nodeId, onClose, onColorChange, onShapeChang
                       fontSize: '16px',
                       color: 'var(--vscode-menu-foreground)',
                     }}>×</span>
+                  )}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* 边框颜色 */}
+          <div style={{ padding: '8px 12px', borderTop: '1px solid var(--vscode-menu-border)' }}>
+            <div style={{ marginBottom: '8px', color: 'var(--vscode-menu-foreground)', fontSize: '12px' }}>边框颜色:</div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+              {colors.map((color) => (
+                <button
+                  key={`stroke-${color.value}`}
+                  onClick={() => {
+                    onStrokeChange(color.value);
+                    onClose();
+                  }}
+                  style={{
+                    width: '24px',
+                    height: '24px',
+                    backgroundColor: color.value || 'transparent',
+                    border: color.value ? '2px solid #fff' : '1px solid var(--vscode-menu-border)',
+                    borderRadius: '2px',
+                    cursor: 'pointer',
+                    position: 'relative',
+                    outline: color.value ? `2px solid ${color.value}` : 'none',
+                    outlineOffset: '-4px',
+                  }}
+                  title={color.name}
+                >
+                  {!color.value && (
+                    <span style={{
+                      position: 'absolute',
+                      top: '50%',
+                      left: '50%',
+                      transform: 'translate(-50%, -50%)',
+                      fontSize: '16px',
+                      color: 'var(--vscode-menu-foreground)',
+                    }}>×</span>
+                  )}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* 文字颜色 */}
+          <div style={{ padding: '8px 12px', borderTop: '1px solid var(--vscode-menu-border)' }}>
+            <div style={{ marginBottom: '8px', color: 'var(--vscode-menu-foreground)', fontSize: '12px' }}>文字颜色:</div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+              {colors.map((color) => (
+                <button
+                  key={`text-${color.value}`}
+                  onClick={() => {
+                    onTextColorChange(color.value);
+                    onClose();
+                  }}
+                  style={{
+                    width: '24px',
+                    height: '24px',
+                    backgroundColor: color.value || 'transparent',
+                    border: color.value ? 'none' : '1px solid var(--vscode-menu-border)',
+                    borderRadius: '2px',
+                    cursor: 'pointer',
+                    position: 'relative',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                  title={color.name}
+                >
+                  {!color.value ? (
+                    <span style={{
+                      fontSize: '16px',
+                      color: 'var(--vscode-menu-foreground)',
+                    }}>×</span>
+                  ) : (
+                    <span style={{ color: '#fff', fontWeight: 'bold', fontSize: '14px' }}>A</span>
                   )}
                 </button>
               ))}

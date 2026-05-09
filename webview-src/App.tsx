@@ -388,9 +388,14 @@ export function App() {
   const handleColorChange = useCallback(
     (color: string) => {
       if (contextMenu?.nodeId) {
+        // 获取当前节点的现有样式
+        const currentNode = nodes.find(n => n.id === contextMenu.nodeId);
+        const currentStyle = currentNode?.data.style || {};
+        
         updateNode(contextMenu.nodeId, {
           style: {
-            fill: color || undefined,
+            ...currentStyle,  // 保留现有样式
+            fill: color || undefined,  // 只更新 fill
           },
         });
         // 立即同步触发保存，避免关闭文件时内容丢失
@@ -401,7 +406,7 @@ export function App() {
         }
       }
     },
-    [contextMenu, updateNode]
+    [contextMenu, updateNode, nodes]
   );
 
   const handleShapeChange = useCallback(
@@ -430,6 +435,56 @@ export function App() {
       }
     }
   }, [contextMenu, deleteNodes]);
+
+  // 处理边框颜色变化
+  const handleStrokeChange = useCallback(
+    (stroke: string) => {
+      if (contextMenu?.nodeId) {
+        // 获取当前节点的现有样式
+        const currentNode = nodes.find(n => n.id === contextMenu.nodeId);
+        const currentStyle = currentNode?.data.style || {};
+        
+        updateNode(contextMenu.nodeId, {
+          style: {
+            ...currentStyle,  // 保留现有样式
+            stroke: stroke || undefined,  // 只更新 stroke
+          },
+        });
+        // 立即同步触发保存，避免关闭文件时内容丢失
+        if (window.vscode) {
+          requestAnimationFrame(() => {
+            window.vscode.postMessage({ type: 'updateContent' });
+          });
+        }
+      }
+    },
+    [contextMenu, updateNode, nodes]
+  );
+
+  // 处理文字颜色变化
+  const handleTextColorChange = useCallback(
+    (textColor: string) => {
+      if (contextMenu?.nodeId) {
+        // 获取当前节点的现有样式
+        const currentNode = nodes.find(n => n.id === contextMenu.nodeId);
+        const currentStyle = currentNode?.data.style || {};
+        
+        updateNode(contextMenu.nodeId, {
+          style: {
+            ...currentStyle,  // 保留现有样式
+            color: textColor || undefined,  // 只更新 color
+          },
+        });
+        // 立即同步触发保存，避免关闭文件时内容丢失
+        if (window.vscode) {
+          requestAnimationFrame(() => {
+            window.vscode.postMessage({ type: 'updateContent' });
+          });
+        }
+      }
+    },
+    [contextMenu, updateNode, nodes]
+  );
 
   return (
     <div className="app-container">
@@ -469,6 +524,8 @@ export function App() {
               nodeId={contextMenu.nodeId}
               onClose={() => setContextMenu(null)}
               onColorChange={handleColorChange}
+              onStrokeChange={handleStrokeChange}
+              onTextColorChange={handleTextColorChange}
               onShapeChange={handleShapeChange}
               onDelete={handleDeleteNode}
             />
