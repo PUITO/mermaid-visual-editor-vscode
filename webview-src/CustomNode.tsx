@@ -92,11 +92,6 @@ export function CustomNode({ data, id, selected }: CustomNodeProps) {
       className={`custom-node ${selected ? 'selected' : ''}`}
       onDoubleClick={handleDoubleClick}
       style={{
-        padding: '10px 20px',
-        background: fill.startsWith('#') || fill.startsWith('rgb') ? fill : `var(--vscode-editor-background)`,
-        border: `2px solid ${stroke.startsWith('#') || stroke.startsWith('rgb') ? stroke : `var(--vscode-panel-border)`}`,
-        color: color.startsWith('#') || color.startsWith('rgb') ? color : `var(--vscode-editor-foreground)`,
-        ...shapeStyles[shape],
         minWidth: '100px',
         textAlign: 'center',
         position: 'relative',
@@ -126,25 +121,37 @@ export function CustomNode({ data, id, selected }: CustomNodeProps) {
         }} 
       />
 
-      {isEditing ? (
-        <input
-          className="node-label-input"
-          value={label}
-          onChange={(e) => setLabel(e.target.value)}
-          onBlur={handleBlur}
-          onKeyDown={handleKeyDown}
-          autoFocus
-          style={{ position: 'relative', zIndex: 1 }}
-        />
-      ) : (
-        <div style={{ 
-          transform: shape === 'diamond' ? 'rotate(-45deg)' : 'none',
+      {/* 形状容器 - 应用 clip-path，但不影响 Handle */}
+      <div
+        style={{
+          padding: '10px 20px',
+          background: fill.startsWith('#') || fill.startsWith('rgb') ? fill : `var(--vscode-editor-background)`,
+          border: `2px solid ${stroke.startsWith('#') || stroke.startsWith('rgb') ? stroke : `var(--vscode-panel-border)`}`,
+          color: color.startsWith('#') || color.startsWith('rgb') ? color : `var(--vscode-editor-foreground)`,
+          ...shapeStyles[shape],
+          minWidth: '100px',
           position: 'relative',
-          zIndex: 1,
-        }}>
-          {label}
-        </div>
-      )}
+        }}
+      >
+        {isEditing ? (
+          <input
+            className="node-label-input"
+            value={label}
+            onChange={(e) => setLabel(e.target.value)}
+            onBlur={handleBlur}
+            onKeyDown={handleKeyDown}
+            autoFocus
+            style={{ position: 'relative', zIndex: 1 }}
+          />
+        ) : (
+          <div style={{ 
+            position: 'relative',
+            zIndex: 1,
+          }}>
+            {label}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
