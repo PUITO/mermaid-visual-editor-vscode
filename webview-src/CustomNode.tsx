@@ -94,13 +94,30 @@ export function CustomNode({ data, id, selected }: CustomNodeProps) {
         textAlign: 'center',
         position: 'relative',
         boxShadow: selected ? '0 0 0 2px var(--vscode-focusBorder)' : 'none',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
       }}
     >
-      {/* Handles for connecting */}
-      <Handle type="target" position={Position.Top} />
-      <Handle type="source" position={Position.Bottom} />
-      <Handle type="source" position={Position.Left} />
-      <Handle type="source" position={Position.Right} />
+      {/* Handles for connecting - only top and bottom */}
+      <Handle 
+        type="target" 
+        position={Position.Top} 
+        style={{ 
+          zIndex: 10,
+          width: '8px',
+          height: '8px',
+        }} 
+      />
+      <Handle 
+        type="source" 
+        position={Position.Bottom} 
+        style={{ 
+          zIndex: 10,
+          width: '8px',
+          height: '8px',
+        }} 
+      />
 
       {isEditing ? (
         <input
@@ -110,15 +127,13 @@ export function CustomNode({ data, id, selected }: CustomNodeProps) {
           onBlur={handleBlur}
           onKeyDown={handleKeyDown}
           autoFocus
+          style={{ position: 'relative', zIndex: 1 }}
         />
       ) : (
         <div style={{ 
           transform: shape === 'diamond' ? 'rotate(-45deg)' : 'none',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          width: '100%',
-          height: '100%',
+          position: 'relative',
+          zIndex: 1,
         }}>
           {label}
         </div>

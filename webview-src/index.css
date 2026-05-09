@@ -98,9 +98,35 @@ body {
   font-size: 14px;
 }
 
+/* Handle 样式 - 确保四个方向都可见且可交互 */
 .react-flow__handle {
   width: 8px;
   height: 8px;
+  background-color: var(--vscode-button-background);
+  border: 1px solid var(--vscode-button-border);
+  transition: background-color 0.2s;
+}
+
+.react-flow__handle:hover {
+  background-color: var(--vscode-button-hoverBackground);
+  transform: scale(1.2);
+}
+
+/* 确保 Handle 在节点边缘正确定位 */
+.react-flow__handle-top {
+  top: -4px;
+}
+
+.react-flow__handle-bottom {
+  bottom: -4px;
+}
+
+.react-flow__handle-left {
+  left: -4px;
+}
+
+.react-flow__handle-right {
+  right: -4px;
 }
 
 .node-label-input {

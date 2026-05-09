@@ -79,13 +79,20 @@ export function serializeToMermaid(
   
   // Generate style definitions for nodes that have custom styles
   nodes.forEach((node) => {
-    if (node.data.style && (node.data.style.fill || node.data.style.stroke || node.data.style.color)) {
-      const nodeId = node.id.replace(/[^a-zA-Z0-9]/g, '_');
-      const fill = node.data.style.fill || '#ffffff';
-      const stroke = node.data.style.stroke || '#000000';
-      const color = node.data.style.color || '#000000';
+    if (node.data.style) {
+      const hasCustomStyle = 
+        (node.data.style.fill && node.data.style.fill !== '') ||
+        (node.data.style.stroke && node.data.style.stroke !== '') ||
+        (node.data.style.color && node.data.style.color !== '');
       
-      mermaidCode += `    style ${nodeId} fill:${fill},stroke:${stroke},color:${color}\n`;
+      if (hasCustomStyle) {
+        const nodeId = node.id.replace(/[^a-zA-Z0-9]/g, '_');
+        const fill = node.data.style.fill || '#ffffff';
+        const stroke = node.data.style.stroke || '#000000';
+        const color = node.data.style.color || '#000000';
+        
+        mermaidCode += `    style ${nodeId} fill:${fill},stroke:${stroke},color:${color}\n`;
+      }
     }
   });
   
@@ -100,7 +107,7 @@ export function parseFromMermaid(code: string): { nodes: any[]; edges: any[] } {
   
   const nodeRegex = /\s*(\w+)\s*[\[\(\{\[]+/;
   const edgeRegex = /(-\.?->|==>)/;
-  const styleRegex = /style\s+(\w+)\s+fill:([^,]+),stroke:([^,]+),color:([^\s]+)/;
+  const styleRegex = /style\s+(\w+)\s+fill:([^,]+),stroke:([^,]+),color:(.+)/;
   
   let nodeId = 1;
   const nodeMap = new Map<string, string>();
