@@ -1,10 +1,15 @@
 graph TB
-    A[开始节点] --> B{条件判断}
-    B -->|是| C[处理流程]
-    B -->|否| D([结束节点])
-    C --> E((圆形节点))
-    C --> F{{六边形}}
-    
+    A[开始节点]
+    B{条件判断}
+    C[处理流程]
+    D([结束节点])
+    E((圆形节点))
+    F{{六边形}}
+    A--> B
+    C--> E
+    C--> F
+    B--> C
+    F--> D
     style A fill:#4CAF50,stroke:#388E3C,color:white
     style B fill:#FF9800,stroke:#F57C00,color:white
     style C fill:#2196F3,stroke:#1976D2,color:white

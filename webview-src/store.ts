@@ -5,6 +5,7 @@ export interface DiagramNode extends Node {
   data: {
     label: string;
     shape?: string;
+    originalId?: string;  // 保存 Mermaid 原始节点ID，避免序列化时ID转换
     style?: {
       fill?: string;
       stroke?: string;
@@ -17,6 +18,8 @@ export interface DiagramEdge extends Edge {
   data?: {
     type?: string;
     label?: string;
+    originalSourceId?: string;  // 保存 Mermaid 原始源节点ID
+    originalTargetId?: string;  // 保存 Mermaid 原始目标节点ID
   };
 }
 

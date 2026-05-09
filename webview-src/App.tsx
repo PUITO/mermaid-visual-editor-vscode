@@ -166,7 +166,17 @@ export function App() {
     })) as any);
   }, [edges, setRfEdges]);
 
-  // Handle connections
+  // Auto-layout using Dagre - define early so it can be used by onConnect
+  const autoLayout = useCallback(() => {
+    const layoutedNodes = applyAutoLayout(nodes, edges, config.direction);
+    setNodes(layoutedNodes);
+    
+    if (window.vscode) {
+      window.vscode.postMessage({ type: 'updateContent' });
+    }
+  }, [nodes, edges, config.direction, setNodes, applyAutoLayout]);
+
+  // Handle connections with auto layout
   const onConnect = useCallback(
     (params: Connection) => {
       const newEdge: DiagramEdge = {
@@ -175,27 +185,26 @@ export function App() {
         target: params.target || '',
         sourceHandle: params.sourceHandle,
         targetHandle: params.targetHandle,
-        data: { type: 'default' },
+        data: { 
+          type: 'default',
+          // 查找源节点和目标节点的originalId
+          originalSourceId: nodes.find(n => n.id === params.source)?.data.originalId || params.source,
+          originalTargetId: nodes.find(n => n.id === params.target)?.data.originalId || params.target,
+        },
       };
       storeAddEdge(newEdge);
       
       // 连接后自动布局
-      // 使用 setTimeout 确保状态更新后再计算布局
-      setTimeout(() => {
-         // 这里直接调用 layout 逻辑，或者依赖 nodes/edges 变化触发的效果
-         // 由于 autoLayout 依赖 nodes 和 edges，而 storeAddEdge 是异步更新 store
-         // 最好是在 store 更新后，由监听 nodes/edges 变化的 useEffect 或者手动触发
-         // 为了保持简单，我们这里不直接调用 autoLayout，而是依赖用户手动点击或后续优化
-         // 但如果需要自动，可以稍后触发。注意：直接调用 autoLayout 可能拿到旧状态。
-         // 更好的方式：在 storeAddEdge 后，由于 rfNodes/rfEdges 是由 store nodes/edges 同步过来的
-         // 我们可以尝试在下一次 tick 执行
-      }, 50);
-
+      setTimeout(() => autoLayout(), 50);
+      
+      // Notify VSCode
       if (window.vscode) {
-        window.vscode.postMessage({ type: 'updateContent' });
+        window.vscode.postMessage({
+          type: 'updateContent',
+        });
       }
     },
-    [storeAddEdge]
+    [storeAddEdge, autoLayout, nodes]
   );
 
   // Add node on double-click (only when clicking on empty canvas)
@@ -204,13 +213,18 @@ export function App() {
       // Check if the click target is the pane background, not a node
       const target = event.target as HTMLElement;
       if (!target.closest('.react-flow__node')) {
+        const newId = `node-${Date.now()}`;
         const newNode: DiagramNode = {
-          id: `node-${Date.now()}`,
+          id: newId,
           position: {
             x: event.clientX - 100,
             y: event.clientY - 100,
           },
-          data: { label: 'New Node', shape: 'rectangle' },
+          data: { 
+            label: 'New Node', 
+            shape: 'rectangle',
+            originalId: newId,  // 新增节点使用内部ID作为originalId
+          },
           type: 'custom',
         };
         addNode(newNode);
@@ -232,33 +246,32 @@ export function App() {
         const selectedNodes = nodes.filter(n => n.selected);
         if (selectedNodes.length > 0) {
           deleteNodes(selectedNodes.map(n => n.id));
+          // 删除后自动布局
+          setTimeout(() => autoLayout(), 50);
         }
       }
       
       if (e.key === 'n' || e.key === 'N') {
+        const newId = `node-${Date.now()}`;
         const newNode: DiagramNode = {
-          id: `node-${Date.now()}`,
+          id: newId,
           position: { x: Math.random() * 500, y: Math.random() * 500 },
-          data: { label: 'New Node', shape: 'rectangle' },
+          data: { 
+            label: 'New Node', 
+            shape: 'rectangle',
+            originalId: newId,  // 新增节点使用内部ID作为originalId
+          },
           type: 'custom',
         };
         addNode(newNode);
+        // 添加后自动布局
+        setTimeout(() => autoLayout(), 50);
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [nodes, deleteNodes, addNode]);
-
-  // Auto-layout using Dagre
-  const autoLayout = useCallback(() => {
-    const layoutedNodes = applyAutoLayout(nodes, edges, config.direction);
-    setNodes(layoutedNodes);
-    
-    if (window.vscode) {
-      window.vscode.postMessage({ type: 'updateContent' });
-    }
-  }, [nodes, edges, config.direction, setNodes, applyAutoLayout]);
+  }, [nodes, deleteNodes, addNode, autoLayout]);
 
   // Generate Mermaid syntax and send to VSCode
   useEffect(() => {
@@ -337,10 +350,15 @@ export function App() {
 
   // Toolbar actions
   const handleAddNode = () => {
+    const newId = `node-${Date.now()}`;
     const newNode: DiagramNode = {
-      id: `node-${Date.now()}`,
+      id: newId,
       position: { x: Math.random() * 500, y: Math.random() * 500 },
-      data: { label: 'New Node', shape: 'rectangle' },
+      data: { 
+        label: 'New Node', 
+        shape: 'rectangle',
+        originalId: newId,  // 新增节点使用内部ID作为originalId
+      },
       type: 'custom',
     };
     addNode(newNode);
