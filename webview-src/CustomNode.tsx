@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Handle, Position } from '@xyflow/react';
 import { DiagramNode } from './store';
+import { useDiagramStore } from './store';
 
 interface CustomNodeProps {
   data: DiagramNode['data'];
@@ -51,6 +52,7 @@ const shapeStyles: Record<string, React.CSSProperties> = {
 export function CustomNode({ data, id, selected }: CustomNodeProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [label, setLabel] = useState(data.label || id);
+  const updateNode = useDiagramStore((state) => state.updateNode);
 
   const handleDoubleClick = () => {
     setIsEditing(true);
@@ -58,13 +60,16 @@ export function CustomNode({ data, id, selected }: CustomNodeProps) {
 
   const handleBlur = () => {
     setIsEditing(false);
-    // Update node label through VSCode API
+    // 先更新 store 中的节点数据
+    updateNode(id, { label });
+    
+    // 延迟触发保存，确保状态更新完成
     if (window.vscode) {
-      window.vscode.postMessage({
-        type: 'updateNode',
-        nodeId: id,
-        data: { label },
-      });
+      setTimeout(() => {
+        window.vscode.postMessage({ 
+          type: 'updateContent' 
+        });
+      }, 50);
     }
   };
 
