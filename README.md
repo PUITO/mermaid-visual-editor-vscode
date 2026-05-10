@@ -1,258 +1,272 @@
-# Mermaid Visual Editor for VSCode
+# Mermaid 可视化编辑器 for VSCode
 
 [![Version](https://img.shields.io/visual-studio-marketplace/v/PUITO.mermaid-visual-editor-vscode)](https://marketplace.visualstudio.com/items?itemName=PUITO.mermaid-visual-editor-vscode)
 [![Downloads](https://img.shields.io/visual-studio-marketplace/d/PUITO.mermaid-visual-editor-vscode)](https://marketplace.visualstudio.com/items?itemName=PUITO.mermaid-visual-editor-vscode)
 [![Rating](https://img.shields.io/visual-studio-marketplace/r/PUITO.mermaid-visual-editor-vscode)](https://marketplace.visualstudio.com/items?itemName=PUITO.mermaid-visual-editor-vscode)
 [![GitHub stars](https://img.shields.io/github/stars/PUITO/mermaid-visual-editor-vscode?style=social)](https://github.com/PUITO/mermaid-visual-editor-vscode)
 
-A Visual Studio Code extension that provides a visual drag-and-drop editor for Mermaid (.mmd) files with interactive diagram editing capabilities.
+一个 Visual Studio Code 扩展，为 Mermaid (.mmd) 文件提供可视化的拖拽编辑器，具有交互式图表编辑功能。
 
-**🔗 Repository**: [https://github.com/PUITO/mermaid-visual-editor-vscode](https://github.com/PUITO/mermaid-visual-editor-vscode)
+**🔗 仓库**: [https://github.com/PUITO/mermaid-visual-editor-vscode](https://github.com/PUITO/mermaid-visual-editor-vscode)
 
-**Inspired by**: [Mermaid Visual Editor](https://github.com/saketkattu/mermaid-visual-editor) - A standalone web-based visual editor for Mermaid.js flowcharts.
+**灵感来源**: [Mermaid Visual Editor](https://github.com/saketkattu/mermaid-visual-editor) - 一个独立的基于 Web 的 Mermaid.js 流程图可视化编辑器。
 
-## Features
+## 功能特性
 
-- 🎨 **Visual Drag-and-Drop Editor**: Create and edit Mermaid diagrams using an intuitive visual canvas with drag-and-drop interactions
-- 👁️ **Live Preview**: Real-time rendering of Mermaid diagrams as you build them visually
-- 🌓 **Full VSCode Theme Support**: Automatically adapts to your VSCode theme (light/dark/high contrast)
-- 🔗 **Interactive Canvas**: Infinite canvas with pan, zoom, and node connection handles
-- 📐 **Auto Layout**: Automatically arrange nodes using the Dagre layout algorithm
-- 💡 **Multiple Node Shapes**: Support for various node shapes (rectangle, rounded, stadium, diamond, circle, hexagon, cylinder, etc.)
-- 🎯 **Edge Customization**: Different edge types (solid, dashed, thick) with arrow support
-- 📤 **Export Options**: Export diagrams as .mmd files or copy Mermaid syntax to clipboard
-- 🔄 **Bi-directional Sync**: Changes in the visual editor update the document and vice versa
-- ⌨️ **Keyboard Shortcuts**: 
-  - `N` - Add new node
-  - `Delete/Backspace` - Delete selected nodes/edges
-  - Double-click canvas - Add node
-  - Double-click node - Edit label
+- 🎨 **可视化拖拽编辑器**：使用直观的可视化画布创建和编辑 Mermaid 图表，支持拖拽交互
+- 👁️ **实时预览**：在可视化构建时实时渲染 Mermaid 图表
+- 🌓 **完整的 VSCode 主题支持**：自动适配您的 VSCode 主题（浅色/深色/高对比度）
+- 🔗 **交互式画布**：无限画布，支持平移、缩放和节点连接手柄
+- 📐 **自动布局**：使用 Dagre 布局算法自动排列节点
+- 💡 **多种节点形状**：支持各种节点形状（矩形、圆角、体育场形、菱形、圆形、六边形、圆柱形等）
+- 🎯 **边线自定义**：不同的边线类型（实线、虚线、粗线）并支持箭头
+- 📤 **导出选项**：将图表导出为 .mmd 文件或复制 Mermaid 语法到剪贴板
+- 🔄 **双向同步**：可视化编辑器中的更改会更新文档，反之亦然
+- ⌨️ **键盘快捷键**：
+  - `N` - 添加新节点
+  - `Delete/Backspace` - 删除选中的节点/边线
+  - 双击画布 - 添加节点
+  - 双击节点 - 编辑标签
 
-## Supported Diagram Types
+## 界面效果
 
-Currently focused on **flowcharts** with more diagram types planned:
-- Flowcharts (✅ Supported)
-- Sequence diagrams (🔜 Coming soon)
-- Class diagrams (🔜 Coming soon)
-- State diagrams (🔜 Coming soon)
-- Entity Relationship diagrams (🔜 Coming soon)
-- And more...
+![Mermaid Visual Editor Interface](images/interface-demo.png)
 
-## Usage
+*Mermaid 可视化编辑器界面展示*
 
-1. **Open a Mermaid File**
-   - Open any `.mmd` or `.mermaid` file in VSCode
-   - The visual editor will automatically open with split view
+### 主要功能演示
 
-2. **Theme Support** 🌓
-   - The editor automatically adapts to your VSCode theme
-   - Switch themes with `Ctrl+K Ctrl+T` (Mac: `Cmd+K Cmd+T`)
-   - Supports light, dark, and high contrast themes
-   - Mermaid diagrams use appropriate theme (default/dark) based on VSCode theme
-   - See [THEME_SUPPORT.md](./THEME_SUPPORT.md) for details
+- **拖拽式节点编辑**：直观地创建和连接流程图节点
+- **实时预览**：左侧编辑，右侧实时渲染 Mermaid 图表
+- **主题适配**：自动跟随 VSCode 主题（浅色/深色/高对比度）
+- **多种节点形状**：支持矩形、圆角、菱形、圆形等多种形状
+- **智能布局**：一键自动排列节点位置
 
-3. **Create Nodes**
-   - Click "+ Add Node" button in the toolbar
-   - Press `N` key
-   - Double-click anywhere on the canvas
+## 支持的图表类型
 
-4. **Connect Nodes**
-   - Drag from the handle (top/bottom/left/right) of one node to another
-   - Edges are created automatically
+目前专注于**流程图**，更多图表类型计划中：
+- 流程图（✅ 已支持）
+- 时序图（🔜 即将推出）
+- 类图（🔜 即将推出）
+- 状态图（🔜 即将推出）
+- 实体关系图（🔜 即将推出）
+- 以及更多...
 
-5. **Edit Nodes**
-   - Double-click a node to edit its label inline
-   - Drag nodes to reposition them
+## 使用方法
 
-6. **Customize Appearance**
-   - Select nodes to change shape and style (coming soon)
-   - Customize edge types and labels (coming soon)
+1. **打开 Mermaid 文件**
+   - 在 VSCode 中打开任何 `.mmd` 或 `.mermaid` 文件
+   - 可视化编辑器将自动以分屏视图打开
 
-7. **Auto Layout**
-   - Click "Auto Layout" to automatically arrange nodes
-   - Choose direction: Top-to-Bottom, Left-to-Right, etc. (coming soon)
+2. **主题支持** 🌓
+   - 编辑器自动适配您的 VSCode 主题
+   - 使用 `Ctrl+K Ctrl+T`（Mac: `Cmd+K Cmd+T`）切换主题
+   - 支持浅色、深色和高对比度主题
+   - Mermaid 图表根据 VSCode 主题使用相应的主题（默认/深色）
+   - 详见 [THEME_SUPPORT.md](./THEME_SUPPORT.md)
 
-8. **Export**
-   - Click "Copy Syntax" to copy Mermaid code to clipboard
-   - Click "Export .mmd" to download as .mmd file
-   - Toggle preview panel to see generated syntax
+3. **创建节点**
+   - 点击工具栏中的 "+ 添加节点" 按钮
+   - 按 `N` 键
+   - 在画布任意位置双击
 
-## Commands
+4. **连接节点**
+   - 从一个节点的手柄（上/下/左/右）拖拽到另一个节点
+   - 边线会自动创建
 
-- `Mermaid: Open Mermaid Visual Editor` - Open the visual editor for the current file
-- `Mermaid: Toggle Preview` - Toggle the preview panel
+5. **编辑节点**
+   - 双击节点以 inline 方式编辑其标签
+   - 拖拽节点以重新定位
 
-## Installation
+6. **自定义外观**
+   - 选择节点以更改形状和样式（即将推出）
+   - 自定义边线类型和标签（即将推出）
 
-### From VSCode Marketplace (Recommended)
+7. **自动布局**
+   - 点击 "自动布局" 以自动排列节点
+   - 选择方向：从上到下、从左到右等（即将推出）
 
-1. Open VSCode
-2. Go to Extensions view (`Ctrl+Shift+X` or `Cmd+Shift+X`)
-3. Search for "Mermaid Visual Editor" or visit: [Marketplace Link](https://marketplace.visualstudio.com/items?itemName=PUITO.mermaid-visual-editor-vscode)
-4. Click Install
+8. **导出**
+   - 点击 "复制语法" 将 Mermaid 代码复制到剪贴板
+   - 点击 "导出 .mmd" 下载为 .mmd 文件
+   - 切换预览面板以查看生成的语法
 
-### From Open VSX Registry
+## 命令
 
-For VSCodium and other open-source editors:
-1. Visit [Open VSX](https://open-vsx.org/)
-2. Search for "Mermaid Visual Editor"
-3. Install from the extension page
+- `Mermaid: 打开 Mermaid 可视化编辑器` - 为当前文件打开可视化编辑器
+- `Mermaid: 切换预览` - 切换预览面板
 
-### Manual Installation (Offline)
+## 安装
 
-If you need to install from a `.vsix` file:
+### 从 VSCode 市场安装（推荐）
 
-1. Download the latest `.vsix` file from [GitHub Releases](https://github.com/PUITO/mermaid-visual-editor-vscode/releases)
-2. In VSCode, go to Extensions view
-3. Click the "..." menu in the top-right corner
-4. Select "Install from VSIX..."
-5. Choose the downloaded `.vsix` file
+1. 打开 VSCode
+2. 进入扩展视图（`Ctrl+Shift+X` 或 `Cmd+Shift+X`）
+3. 搜索 "Mermaid Visual Editor" 或访问：[市场链接](https://marketplace.visualstudio.com/items?itemName=PUITO.mermaid-visual-editor-vscode)
+4. 点击安装
 
-## Development & Contributing
+### 从 Open VSX 注册表安装
 
-See [PUBLISHING.md](./PUBLISHING.md) for detailed release process and GitHub Actions configuration.
+适用于 VSCodium 和其他开源编辑器：
+1. 访问 [Open VSX](https://open-vsx.org/)
+2. 搜索 "Mermaid Visual Editor"
+3. 从扩展页面安装
 
-### Local Development
+### 手动安装（离线）
+
+如果需要从 `.vsix` 文件安装：
+
+1. 从 [GitHub Releases](https://github.com/PUITO/mermaid-visual-editor-vscode/releases) 下载最新的 `.vsix` 文件
+2. 在 VSCode 中，进入扩展视图
+3. 点击右上角的 "..." 菜单
+4. 选择 "从 VSIX 安装..."
+5. 选择下载的 `.vsix` 文件
+
+## 开发与贡献
+
+详见 [PUBLISHING.md](./PUBLISHING.md) 了解详细的发布流程和 GitHub Actions 配置。
+
+### 本地开发
 
 ```bash
-# Clone the repository
+# 克隆仓库
 git clone https://github.com/PUITO/mermaid-visual-editor-vscode.git
 cd mermaid-visual-editor-vscode
 
-# Install dependencies
+# 安装依赖
 npm install
 
-# Compile TypeScript and build webview
+# 编译 TypeScript 并构建 webview
 npm run compile
 
-# Run in development mode (F5 in VSCode)
-# Or watch for changes
+# 以开发模式运行（在 VSCode 中按 F5）
+# 或监视更改
 npm run watch
 npm run watch:webview
 ```
 
-### Building for Release
+### 构建发布版本
 
 ```bash
-# Compile and package
+# 编译并打包
 npm run compile
 npx vsce package
 
-# This generates: mermaid-visual-editor-vscode-X.X.X.vsix
+# 这将生成：mermaid-visual-editor-vscode-X.X.X.vsix
 ```
 
-### Automated Releases with GitHub Actions
+### 使用 GitHub Actions 自动发布
 
-This project uses GitHub Actions for automated releases:
+本项目使用 GitHub Actions 进行自动发布：
 
-1. **CI Pipeline**: Automatically builds and tests on every push/PR
-2. **Release Pipeline**: Publishes to VSCode Marketplace and Open VSX when a version tag is pushed
+1. **CI 流水线**：每次推送/PR 时自动构建和测试
+2. **发布流水线**：推送版本标签时发布到 VSCode 市场和 Open VSX
 
-To trigger a release:
+触发发布：
 ```bash
-# Update version in package.json
-# Commit changes
+# 更新 package.json 中的版本
+# 提交更改
 git add package.json
 git commit -m "Bump version to X.X.X"
 
-# Create and push tag
+# 创建并推送标签
 git tag vX.X.X
 git push origin vX.X.X
 ```
 
-GitHub Actions will automatically:
-- ✅ Build the project
-- ✅ Package as VSIX
-- ✅ Create GitHub Release with VSIX download
-- ✅ Publish to VSCode Marketplace
-- ✅ Publish to Open VSX Registry
+GitHub Actions 将自动：
+- ✅ 构建项目
+- ✅ 打包为 VSIX
+- ✅ 创建包含 VSIX 下载的 GitHub Release
+- ✅ 发布到 VSCode 市场
+- ✅ 发布到 Open VSX 注册表
 
-See [PUBLISHING.md](./PUBLISHING.md) for complete setup instructions.
+详见 [PUBLISHING.md](./PUBLISHING.md) 获取完整的设置说明。
 
-## Requirements
+## 要求
 
-- VSCode 1.85.0 or higher
+- VSCode 1.85.0 或更高版本
 
-## Extension Settings
+## 扩展设置
 
-This extension contributes:
+此扩展贡献：
 
-- Custom editor for `.mmd` and `.mermaid` files
-- Language support for Mermaid syntax
-- Toolbar integration
+- `.mmd` 和 `.mermaid` 文件的自定义编辑器
+- Mermaid 语法的语言支持
+- 工具栏集成
 
-## Technology Stack
+## 技术栈
 
-This VSCode extension is built with:
-- **React** - UI framework
-- **React Flow (@xyflow/react)** - Interactive graph/canvas library
-- **Zustand** - State management
-- **Dagre** - Graph layout algorithm
-- **Mermaid.js** - Diagram rendering engine
-- **TypeScript** - Type safety
-- **Webpack** - Module bundling
+此 VSCode 扩展使用以下技术构建：
+- **React** - UI 框架
+- **React Flow (@xyflow/react)** - 交互式图表/画布库
+- **Zustand** - 状态管理
+- **Dagre** - 图布局算法
+- **Mermaid.js** - 图表渲染引擎
+- **TypeScript** - 类型安全
+- **Webpack** - 模块打包
 
-## Known Issues
+## 已知问题
 
-- Import of existing complex Mermaid diagrams is still being improved
-- Some advanced Mermaid features (subgraphs, special styling) are not yet supported
-- Parser for complex Mermaid syntax is simplified
+- 导入现有复杂 Mermaid 图表的功能仍在改进中
+- 一些高级 Mermaid 功能（子图、特殊样式）尚未支持
+- 复杂 Mermaid 语法的解析器已简化
 
-Please report any issues on our GitHub repository.
+请在我们的 GitHub 仓库报告任何问题。
 
-## Roadmap
+## 路线图
 
-### Near-term
-- ✅ Visual drag-and-drop editor (Implemented)
-- ✅ Auto layout with Dagre (Implemented)
-- ✅ Multiple node shapes (Implemented)
-- Improved Mermaid syntax parser for importing complex diagrams
-- Subgraph support
-- More customization options for nodes and edges
+### 短期
+- ✅ 可视化拖拽编辑器（已实现）
+- ✅ 使用 Dagre 的自动布局（已实现）
+- ✅ 多种节点形状（已实现）
+- 改进 Mermaid 语法解析器以导入复杂图表
+- 子图支持
+- 更多节点和边线的自定义选项
 
-### Medium-term
-- Sequence diagram support
-- Class diagram support
-- State diagram support
-- ER diagram support
-- Theme selector for the editor UI
-- Dark mode support
+### 中期
+- 时序图支持
+- 类图支持
+- 状态图支持
+- ER 图支持
+- 编辑器 UI 的主题选择器
+- 深色模式支持
 
-### Long-term
-- AI-assisted diagram generation
-- Two-way code-canvas sync improvements
-- Real-time collaboration features
+### 长期
+- AI 辅助图表生成
+- 代码-画布双向同步改进
+- 实时协作功能
 
-## Release Notes
+## 发布说明
 
 ### 0.0.1
 
-- Initial release
-- Visual drag-and-drop editor for flowcharts
-- Live preview with Mermaid syntax generation
-- Auto layout functionality
-- Export to .mmd and copy syntax features
-- Keyboard shortcuts support
-- Multiple node shapes support
+- 初始发布
+- 流程图的可视化拖拽编辑器
+- 带有 Mermaid 语法生成的实时预览
+- 自动布局功能
+- 导出为 .mmd 和复制语法功能
+- 键盘快捷键支持
+- 多种节点形状支持
 
-## License
+## 许可证
 
 MIT
 
-## Acknowledgments
+## 致谢
 
-This project is heavily inspired by and based on the excellent work of:
+本项目深受以下优秀作品的启发并基于其构建：
 
 - **[Mermaid Visual Editor](https://github.com/saketkattu/mermaid-visual-editor)** by Saket Kattu
-  - Original concept and implementation of visual drag-and-drop Mermaid editor
-  - Architecture patterns for canvas state management and Mermaid serialization
-  - This VSCode extension adapts and extends that work for the VSCode ecosystem
+  - 可视化拖拽 Mermaid 编辑器的原始概念和实现
+  - 画布状态管理和 Mermaid 序列化的架构模式
+  - 此 VSCode 扩展为该作品在 VSCode 生态系统中的适配和扩展
 
-Special thanks to the creators and contributors of:
+特别感谢以下项目的创建者和贡献者：
 - [Mermaid.js](https://mermaid.js.org/)
 - [React Flow](https://reactflow.dev/)
 - [Dagre](https://github.com/dagrejs/dagre)
 
 ---
 
-**Note**: This is a VSCode extension adaptation of the standalone Mermaid Visual Editor web application. All core concepts and implementation patterns are derived from the original project.
+**注意**：这是独立 Mermaid Visual Editor Web 应用程序的 VSCode 扩展适配版本。所有核心概念和实现模式均源自原始项目。
