@@ -17,6 +17,7 @@ import { CustomNode } from './CustomNode';
 import { ContextMenu } from './ContextMenu';
 import { useDiagramStore, DiagramNode, DiagramEdge } from './store';
 import { serializeToMermaid, parseFromMermaid, MermaidConfig } from './mermaidSerializer';
+import { initializeDiagramRegistry, diagramRegistry } from './diagrams';
 
 declare global {
   interface Window {
@@ -54,6 +55,7 @@ export function App() {
   const [previewContent, setPreviewContent] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [themeColors, setThemeColors] = useState<VsCodeThemeColors | null>(null);
+  const [diagramType, setDiagramType] = useState<string>('flowchart');
   
   // 右键菜单状态
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number; nodeId?: string; edgeId?: string } | null>(null);
@@ -64,6 +66,11 @@ export function App() {
     handDrawn: false,
     curveStyle: 'basis',
   });
+
+  // 初始化图表注册表
+  useEffect(() => {
+    initializeDiagramRegistry();
+  }, []);
 
   // 自动布局函数（独立函数，避免循环依赖）
   const applyAutoLayout = useCallback((currentNodes: any[], currentEdges: any[], direction: string) => {
@@ -313,50 +320,72 @@ export function App() {
       const handleMessage = (event: MessageEvent) => {
         const message = event.data;
         if (message.type === 'initContent' && message.content) {
-          const parsed = parseFromMermaid(message.content);
-          setNodes(parsed.nodes);
-          setEdges(parsed.edges);
+          // 使用注册表检测图表类型
+          const handler = diagramRegistry.getHandler(message.content);
+          setDiagramType(handler.type);
           
-          // 延迟应用自动布局，确保节点已设置
-          setTimeout(() => {
-            // 触发自动布局
-            const dagreGraph = new dagre.graphlib.Graph();
-            dagreGraph.setDefaultEdgeLabel(() => ({}));
-            dagreGraph.setGraph({ rankdir: config.direction, nodesep: 80, ranksep: 80 });
-
-            parsed.nodes.forEach((node: DiagramNode) => {
-              dagreGraph.setNode(node.id, { width: 150, height: 50 });
-            });
-
-            parsed.edges.forEach((edge: DiagramEdge) => {
-              dagreGraph.setEdge(edge.source, edge.target);
-            });
-
-            dagre.layout(dagreGraph);
-
-            const layoutedNodes = parsed.nodes.map((node: DiagramNode) => {
-              const nodeWithPosition = dagreGraph.node(node.id);
-              return {
-                ...node,
-                position: {
-                  x: nodeWithPosition.x - 75,
-                  y: nodeWithPosition.y - 25,
-                },
-              };
-            });
-
-            setNodes(layoutedNodes);
+          console.log('Detected diagram type:', handler.type);
+          
+          // 根据图表类型解析
+          if (handler.type === 'flowchart') {
+            const parsed = parseFromMermaid(message.content);
+            setNodes(parsed.nodes);
+            setEdges(parsed.edges);
             
-            if (window.vscode) {
-              window.vscode.postMessage({ type: 'updateContent' });
-            }
-          }, 100);
+            // 延迟应用自动布局，确保节点已设置
+            setTimeout(() => {
+              // 触发自动布局
+              const dagreGraph = new dagre.graphlib.Graph();
+              dagreGraph.setDefaultEdgeLabel(() => ({}));
+              dagreGraph.setGraph({ rankdir: config.direction, nodesep: 80, ranksep: 80 });
+
+              parsed.nodes.forEach((node: DiagramNode) => {
+                dagreGraph.setNode(node.id, { width: 150, height: 50 });
+              });
+
+              parsed.edges.forEach((edge: DiagramEdge) => {
+                dagreGraph.setEdge(edge.source, edge.target);
+              });
+
+              dagre.layout(dagreGraph);
+
+              const layoutedNodes = parsed.nodes.map((node: DiagramNode) => {
+                const nodeWithPosition = dagreGraph.node(node.id);
+                return {
+                  ...node,
+                  position: {
+                    x: nodeWithPosition.x - 75,
+                    y: nodeWithPosition.y - 25,
+                  },
+                };
+              });
+
+              setNodes(layoutedNodes);
+              
+              if (window.vscode) {
+                window.vscode.postMessage({ type: 'updateContent' });
+              }
+            }, 100);
+          } else {
+            // 对于其他图表类型，暂时只显示预览
+            setPreviewContent(message.content);
+            setError(`Visualization for ${handler.type} is not yet fully implemented. Showing raw Mermaid code.`);
+          }
         }
         
         // 处理保存请求（关闭前触发）
         if (message.type === 'requestSave') {
           try {
-            const mermaidCode = serializeToMermaid(nodes, edges, config);
+            let mermaidCode = '';
+            
+            // 根据图表类型使用相应的处理器
+            if (diagramType === 'flowchart') {
+              mermaidCode = serializeToMermaid(nodes, edges, config);
+            } else {
+              // 对于其他类型，直接使用预览内容
+              mermaidCode = previewContent;
+            }
+            
             if (window.vscode) {
               window.vscode.postMessage({
                 type: 'saveContent',
@@ -368,7 +397,7 @@ export function App() {
             if (window.vscode) {
               window.vscode.postMessage({
                 type: 'saveContent',
-                content: '',
+                content: previewContent,
               });
             }
           }
