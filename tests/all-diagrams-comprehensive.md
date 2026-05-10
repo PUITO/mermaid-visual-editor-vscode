@@ -221,6 +221,50 @@ stateDiagram-v2
     Cancelled --> [*]
 ```
 
+## 11. Gantt Chart（甘特图）- 代码预览
+
+```mermaid
+gantt
+    title 项目开发计划
+    dateFormat  YYYY-MM-DD
+    section 设计阶段
+    需求分析           :done,    des1, 2024-01-01, 2024-01-05
+    UI设计             :active,  des2, 2024-01-06, 3d
+    架构设计           :         des3, after des2, 5d
+    section 开发阶段
+    前端开发           :         dev1, 2024-01-15, 10d
+    后端开发           :         dev2, 2024-01-15, 12d
+    数据库设计         :         dev3, 2024-01-15, 7d
+    section 测试阶段
+    单元测试           :         test1, 2024-01-28, 5d
+    集成测试           :         test2, after test1, 7d
+    用户验收           :crit,    test3, after test2, 3d
+```
+
+## 12. Pie Chart（饼图）- 代码预览
+
+```mermaid
+pie title 市场份额分布
+    "公司A" : 40
+    "公司B" : 25
+    "公司C" : 20
+    "其他" : 15
+```
+
+## 13. Advanced Pie Chart（高级饼图）
+
+```mermaid
+pie showData
+    title 编程语言流行度 (2024)
+    "JavaScript" : 65
+    "Python" : 55
+    "Java" : 45
+    "TypeScript" : 40
+    "C#" : 30
+    "Go" : 25
+    "Rust" : 20
+```
+
 ## 使用说明
 
 1. **流程图**：支持 React Flow 可视化拖拽编辑，自动布局
@@ -228,6 +272,8 @@ stateDiagram-v2
 3. **序列图**：使用表单编辑器管理参与者、消息流、注释
 4. **类图**：目前仅支持代码预览和编辑
 5. **状态图**：目前仅支持代码预览和编辑
+6. **甘特图**：目前仅支持代码预览和编辑
+7. **饼图**：目前仅支持代码预览和编辑
 
 所有图表类型都支持：
 - 自动检测图表类型
