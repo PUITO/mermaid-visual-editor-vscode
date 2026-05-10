@@ -18,6 +18,8 @@ import { ContextMenu } from './ContextMenu';
 import { useDiagramStore, DiagramNode, DiagramEdge } from './store';
 import { serializeToMermaid, parseFromMermaid, MermaidConfig } from './mermaidSerializer';
 import { initializeDiagramRegistry, diagramRegistry } from './diagrams';
+import { ERDiagramEditor } from './diagrams/erDiagram/editor';
+import { SequenceDiagramEditor } from './diagrams/sequence/editor';
 
 declare global {
   interface Window {
@@ -590,23 +592,41 @@ export function App() {
 
       <div className="main-content">
         <div className="canvas-container">
-          <ReactFlow
-            nodes={rfNodes}
-            edges={rfEdges}
-            onNodesChange={onNodesChange}
-            onEdgesChange={onEdgesChange}
-            onConnect={onConnect}
-            onDoubleClick={onPaneDoubleClick}
-            onNodeContextMenu={onNodeContextMenu}
-            onEdgeContextMenu={onEdgeContextMenu}
-            onPaneContextMenu={onPaneContextMenu}
-            nodeTypes={nodeTypes}
-            fitView
-            attributionPosition="bottom-right"
-          >
-            <Controls />
-            <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
-          </ReactFlow>
+          {/* 根据图表类型渲染不同的编辑器 */}
+          {diagramType === 'flowchart' ? (
+            <ReactFlow
+              nodes={rfNodes}
+              edges={rfEdges}
+              onNodesChange={onNodesChange}
+              onEdgesChange={onEdgesChange}
+              onConnect={onConnect}
+              onDoubleClick={onPaneDoubleClick}
+              onNodeContextMenu={onNodeContextMenu}
+              onEdgeContextMenu={onEdgeContextMenu}
+              onPaneContextMenu={onPaneContextMenu}
+              nodeTypes={nodeTypes}
+              fitView
+              attributionPosition="bottom-right"
+            >
+              <Controls />
+              <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
+            </ReactFlow>
+          ) : diagramType === 'erDiagram' ? (
+            <ERDiagramEditor
+              model={{ entities: [], relationships: [] }}
+              onChange={() => {}}
+            />
+          ) : diagramType === 'sequenceDiagram' ? (
+            <SequenceDiagramEditor
+              model={{ participants: [], messages: [], notes: [] }}
+              onChange={() => {}}
+            />
+          ) : (
+            <div style={{ padding: '20px', textAlign: 'center' }}>
+              <p>Visualization for {diagramType} is not yet implemented.</p>
+              <p>Please use the preview panel to view and edit the code.</p>
+            </div>
+          )}
           
           {contextMenu && (
             <ContextMenu
