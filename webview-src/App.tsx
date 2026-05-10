@@ -71,6 +71,9 @@ export function App() {
   const [isRendering, setIsRendering] = useState(false);
   const renderTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   
+  // 标记是否为原始内容（防止非 flowchart 类型被覆盖）
+  const isOriginalContentRef = useRef<boolean>(false);
+  
   // 右键菜单状态
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number; nodeId?: string; edgeId?: string } | null>(null);
   
@@ -289,6 +292,11 @@ export function App() {
 
   // Generate Mermaid syntax and send to VSCode
   useEffect(() => {
+    // 对于非 flowchart 类型，不要序列化 nodes/edges（它们是空的）
+    if (diagramType !== 'flowchart') {
+      return;
+    }
+    
     try {
       const mermaidCode = serializeToMermaid(nodes, edges, config);
       setPreviewContent(mermaidCode);
@@ -303,10 +311,15 @@ export function App() {
     } catch (err: any) {
       setError(err.message);
     }
-  }, [nodes, edges, config]);
+  }, [nodes, edges, config, diagramType]);
 
   // 监听节点和边的变化，立即触发保存（防止快速关闭时内容丢失）
   useEffect(() => {
+    // 对于非 flowchart 类型，不处理 nodes/edges 变化
+    if (diagramType !== 'flowchart') {
+      return;
+    }
+    
     if (nodes.length === 0 && edges.length === 0) {
       return; // 初始状态，不触发保存
     }
@@ -325,7 +338,7 @@ export function App() {
         }
       });
     }
-  }, [nodes, edges, config]);
+  }, [nodes, edges, config, diagramType]);
 
   // Mermaid 渲染：对于不支持可视化的图表类型，使用 Mermaid 直接渲染
   useEffect(() => {
@@ -431,9 +444,9 @@ export function App() {
               }
             }, 100);
           } else {
-            // 对于其他图表类型，暂时只显示预览
+            // 对于其他图表类型，保留原始内容用于预览和保存
             setPreviewContent(message.content);
-            setError(`Visualization for ${handler.type} is not yet fully implemented. Showing raw Mermaid code.`);
+            setError(null); // 清除错误，因为这不是错误状态
           }
         }
         
