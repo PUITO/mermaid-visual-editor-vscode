@@ -1,0 +1,16 @@
+gitGraph
+    commit id: "初始化项目"
+    commit id: "添加基础结构"
+    branch develop
+    checkout develop
+    commit id: "开发功能A"
+    commit id: "开发功能B"
+    checkout main
+    merge develop id: "合并develop"
+    commit id: "发布v1.0"
+    branch feature-c
+    checkout feature-c
+    commit id: "开发功能C"
+    checkout main
+    merge feature-c id: "合并功能C"
+    commit id: "发布v1.1"

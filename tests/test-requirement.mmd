@@ -1,0 +1,32 @@
+requirementDiagram
+    requirement 用户登录 {
+        id: REQ-001
+        desc: 用户可以通过用户名和密码登录系统
+        risk: high
+        verifymethod: test
+    }
+    
+    requirement 密码加密 {
+        id: REQ-002
+        desc: 用户密码必须加密存储
+        risk: critical
+        verifymethod: inspection
+    }
+    
+    requirement 会话管理 {
+        id: REQ-003
+        desc: 系统需要管理用户会话
+        risk: medium
+        verifymethod: test
+    }
+    
+    functionalRequirement JWT令牌 {
+        id: FR-001
+        desc: 使用JWT进行身份验证
+        risk: high
+        verifymethod: test
+    }
+    
+    用户登录 - satisfies -> JWT令牌
+    密码加密 - refines -> 用户登录
+    会话管理 - contains -> JWT令牌

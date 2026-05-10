@@ -1,0 +1,27 @@
+---
+title: 微服务架构
+config:
+  theme: default
+---
+architecture-beta
+    group frontend(logos:react)[前端层]
+    group backend(logos:nodejs)[后端层]
+    group database(logos:database)[数据层]
+    
+    service web(server)[Web应用] in frontend
+    service api(gateway)[API网关] in backend
+    service auth(service)[认证服务] in backend
+    service user(service)[用户服务] in backend
+    service order(service)[订单服务] in backend
+    service db(database)[主数据库] in database
+    service cache(cache)[缓存] in database
+    
+    web:R --> L:api
+    api:R --> L:auth
+    api:R --> L:user
+    api:R --> L:order
+    auth:B --> T:db
+    user:B --> T:db
+    order:B --> T:db
+    auth:T --> B:cache
+    user:T --> B:cache

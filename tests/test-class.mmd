@@ -1,0 +1,33 @@
+classDiagram
+    class Animal {
+        +String name
+        +int age
+        +eat()
+        +sleep()
+        #makeSound()
+    }
+    
+    class Dog {
+        +String breed
+        +bark()
+        +fetch()
+    }
+    
+    class Cat {
+        +String color
+        +meow()
+        +purr()
+    }
+    
+    class Bird {
+        +double wingSpan
+        +fly()
+        +sing()
+    }
+    
+    Animal <|-- Dog : 继承
+    Animal <|-- Cat : 继承
+    Animal <|-- Bird : 继承
+    
+    note for Animal "所有动物的基类"
+    note for Dog "忠诚的宠物"

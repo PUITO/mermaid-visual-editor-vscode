@@ -1,0 +1,21 @@
+stateDiagram-v2
+    [*] --> Created
+    Created --> Paid: 支付
+    Paid --> Shipped: 发货
+    Shipped --> Delivered: 送达
+    Delivered --> [*]
+    
+    Paid --> Cancelled: 取消订单
+    Shipped --> Returned: 退货
+    Returned --> Refunded: 退款
+    Refunded --> [*]
+    
+    note right of Created
+        订单已创建
+        等待支付
+    end note
+    
+    note right of Delivered
+        订单已完成
+        交易成功
+    end note
