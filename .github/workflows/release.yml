@@ -20,6 +20,8 @@ jobs:
   build-and-publish:
     name: Build and Publish
     runs-on: ubuntu-latest
+    permissions:
+      contents: write  # 允许创建 Release 和上传文件
     
     steps:
       - name: Checkout code
