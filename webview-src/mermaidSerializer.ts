@@ -5,6 +5,7 @@ export interface MermaidConfig {
   theme: 'default' | 'dark' | 'forest' | 'neutral' | 'base';
   handDrawn: boolean;
   curveStyle: string;
+  diagramType?: 'graph' | 'flowchart';  // Mermaid 10+ 推荐使用 flowchart
 }
 
 const shapeMap: Record<string, string> = {
@@ -45,7 +46,9 @@ export function serializeToMermaid(
     curveStyle: 'basis',
   }
 ): string {
-  let mermaidCode = `graph ${config.direction}\n`;
+  // Mermaid 10+ 推荐使用 flowchart 而非 graph
+  const diagramType = config.diagramType || 'flowchart';
+  let mermaidCode = `${diagramType} ${config.direction}\n`;
   
   // Generate node definitions
   nodes.forEach((node) => {

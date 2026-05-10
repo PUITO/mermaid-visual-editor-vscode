@@ -65,6 +65,7 @@ export function App() {
     theme: 'default',
     handDrawn: false,
     curveStyle: 'basis',
+    diagramType: 'flowchart',  // Mermaid 10+ 推荐使用 flowchart
   });
 
   // 初始化图表注册表

@@ -41,6 +41,7 @@ export class FlowchartHandler implements DiagramHandler<FlowchartModel> {
         theme: 'default',
         handDrawn: false,
         curveStyle: 'basis',
+        diagramType: 'flowchart',  // Mermaid 10+ 推荐使用 flowchart
       },
     };
   }
@@ -62,6 +63,7 @@ export class FlowchartHandler implements DiagramHandler<FlowchartModel> {
         theme: 'default',
         handDrawn: false,
         curveStyle: 'basis',
+        diagramType: 'flowchart',  // Mermaid 10+ 推荐使用 flowchart
       },
     };
   }
