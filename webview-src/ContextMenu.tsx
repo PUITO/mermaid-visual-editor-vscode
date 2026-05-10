@@ -11,6 +11,7 @@ interface ContextMenuProps {
   onTextColorChange: (textColor: string) => void;
   onShapeChange: (shape: string) => void;
   onDelete: () => void;
+  onEdgeLabelChange?: (label: string) => void;  // 新增：边标签修改
 }
 
 const colors = [
@@ -33,7 +34,9 @@ const shapes = [
   { name: '圆柱体', value: 'cylinder' },
 ];
 
-export function ContextMenu({ x, y, nodeId, edgeId, onClose, onColorChange, onStrokeChange, onTextColorChange, onShapeChange, onDelete }: ContextMenuProps) {
+export function ContextMenu({ x, y, nodeId, edgeId, onClose, onColorChange, onStrokeChange, onTextColorChange, onShapeChange, onDelete, onEdgeLabelChange }: ContextMenuProps) {
+  const [edgeLabel, setEdgeLabel] = useState('');
+  
   useEffect(() => {
     const handleClick = () => onClose();
     document.addEventListener('click', handleClick);
@@ -249,6 +252,46 @@ export function ContextMenu({ x, y, nodeId, edgeId, onClose, onColorChange, onSt
           <div style={{ padding: '8px 12px', borderBottom: '1px solid var(--vscode-menu-border)' }}>
             <strong style={{ color: 'var(--vscode-menu-foreground)' }}>连接线设置</strong>
           </div>
+          
+          {/* 边标签编辑 */}
+          {onEdgeLabelChange && (
+            <div style={{ padding: '8px 12px' }}>
+              <div style={{ marginBottom: '8px', color: 'var(--vscode-menu-foreground)', fontSize: '12px' }}>标签文本:</div>
+              <input
+                type="text"
+                value={edgeLabel}
+                onChange={(e) => setEdgeLabel(e.target.value)}
+                placeholder="输入标签（如：Yes/No）"
+                style={{
+                  width: '100%',
+                  padding: '4px 8px',
+                  backgroundColor: 'var(--vscode-input-background)',
+                  color: 'var(--vscode-input-foreground)',
+                  border: '1px solid var(--vscode-input-border)',
+                  borderRadius: '2px',
+                  boxSizing: 'border-box',
+                }}
+              />
+              <button
+                onClick={() => {
+                  onEdgeLabelChange(edgeLabel);
+                  onClose();
+                }}
+                style={{
+                  marginTop: '8px',
+                  width: '100%',
+                  padding: '6px 12px',
+                  backgroundColor: 'var(--vscode-button-background)',
+                  color: 'var(--vscode-button-foreground)',
+                  border: 'none',
+                  borderRadius: '2px',
+                  cursor: 'pointer',
+                }}
+              >
+                应用标签
+              </button>
+            </div>
+          )}
           
           <div style={{ borderTop: '1px solid var(--vscode-menu-border)', padding: '4px 0' }}>
             <button

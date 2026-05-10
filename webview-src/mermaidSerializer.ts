@@ -164,12 +164,17 @@ export function parseFromMermaid(code: string): { nodes: any[]; edges: any[] } {
     // 跳过空行、注释、init 指令、graph 声明和 style 语句
     if (!trimmed || trimmed.startsWith('%%') || trimmed.startsWith('graph') || trimmed.startsWith('style')) return;
     
-    // 先尝试匹配边定义（因为边定义可能包含节点）
-    const edgeMatch = trimmed.match(/(\w+)\s*[^\-]*(-\.?->|==>)\s*(\w+)/);
+    // 先尝试匹配边定义（因为边定义可能包含节点和标签）
+    // 支持格式: A --> B, A -->|label| B, A -.-> B, A ==> B
+    const edgeMatch = trimmed.match(/(\w+)\s*(?:[^\-]*?)?(-\.?->|==>)\s*(\w+)/);
     if (edgeMatch) {
       const sourceId = edgeMatch[1];
       const targetId = edgeMatch[3];
       const edgeType = edgeMatch[2];
+      
+      // 提取边的标签（如果存在）
+      const labelMatch = trimmed.match(/\|([^|]+)\|/);
+      const edgeLabel = labelMatch ? labelMatch[1].trim() : undefined;
       
       // 确保源节点存在
       if (!nodeMap.has(sourceId)) {
@@ -260,6 +265,7 @@ export function parseFromMermaid(code: string): { nodes: any[]; edges: any[] } {
         target: nodeMap.get(targetId)!,
         data: { 
           type,
+          label: edgeLabel,  // 保存边的标签
           originalSourceId: sourceId,
           originalTargetId: targetId,
         },

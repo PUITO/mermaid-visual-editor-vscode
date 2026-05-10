@@ -50,7 +50,7 @@ interface VsCodeThemeColors {
 }
 
 export function App() {
-  const { nodes, edges, addNode, addEdge: storeAddEdge, updateNode, deleteNodes, deleteEdge, setNodes, setEdges } = useDiagramStore();
+  const { nodes, edges, addNode, addEdge: storeAddEdge, updateNode, updateEdge, deleteNodes, deleteEdge, setNodes, setEdges } = useDiagramStore();
   const [rfNodes, setRfNodes, onNodesChange] = useNodesState([]);
   const [rfEdges, setRfEdges, onEdgesChange] = useEdgesState([]);
   const [previewVisible, setPreviewVisible] = useState(true);
@@ -565,6 +565,17 @@ export function App() {
     [contextMenu, updateNode, nodes]
   );
 
+  // 处理边标签变化
+  const handleEdgeLabelChange = useCallback(
+    (label: string) => {
+      if (contextMenu?.edgeId) {
+        updateEdge(contextMenu.edgeId, { label });
+        // 不需要手动触发保存，useEffect 会自动监听 edges 变化并保存
+      }
+    },
+    [contextMenu, updateEdge]
+  );
+
   return (
     <div className="app-container">
       <div className="toolbar">
@@ -638,8 +649,13 @@ export function App() {
               onColorChange={handleColorChange}
               onStrokeChange={handleStrokeChange}
               onTextColorChange={handleTextColorChange}
-              onShapeChange={handleShapeChange}
+              onShapeChange={(shape) => {
+                if (contextMenu.nodeId) {
+                  updateNode(contextMenu.nodeId, { shape });
+                }
+              }}
               onDelete={contextMenu.edgeId ? handleDeleteEdge : handleDeleteNode}
+              onEdgeLabelChange={handleEdgeLabelChange}
             />
           )}
         </div>
