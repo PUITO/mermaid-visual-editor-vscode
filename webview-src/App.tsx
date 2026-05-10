@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState, useRef } from 'react';
 import {
   ReactFlow,
   addEdge,
@@ -12,6 +12,7 @@ import {
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import dagre from 'dagre';
+import mermaid from 'mermaid';
 
 import { CustomNode } from './CustomNode';
 import { ContextMenu } from './ContextMenu';
@@ -62,6 +63,11 @@ export function App() {
   const [error, setError] = useState<string | null>(null);
   const [themeColors, setThemeColors] = useState<VsCodeThemeColors | null>(null);
   const [diagramType, setDiagramType] = useState<string>('flowchart');
+  
+  // Mermaid 渲染相关
+  const mermaidContainerRef = useRef<HTMLDivElement>(null);
+  const [mermaidSvg, setMermaidSvg] = useState<string>('');
+  const [mermaidError, setMermaidError] = useState<string | null>(null);
   
   // 右键菜单状态
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number; nodeId?: string; edgeId?: string } | null>(null);
@@ -319,6 +325,36 @@ export function App() {
     }
   }, [nodes, edges, config]);
 
+  // Mermaid 渲染：对于不支持可视化的图表类型，使用 Mermaid 直接渲染
+  useEffect(() => {
+    const shouldRenderWithMermaid = ['classDiagram', 'stateDiagram', 'gantt', 'pie'].includes(diagramType);
+    
+    if (!shouldRenderWithMermaid || !previewContent) {
+      setMermaidSvg('');
+      return;
+    }
+
+    const renderMermaid = async () => {
+      try {
+        mermaid.initialize({
+          startOnLoad: false,
+          theme: themeColors ? 'dark' : 'default',
+          securityLevel: 'loose',
+        });
+
+        const { svg } = await mermaid.render(`mermaid-${diagramType}`, previewContent);
+        setMermaidSvg(svg);
+        setMermaidError(null);
+      } catch (err: any) {
+        console.error('Mermaid render error:', err);
+        setMermaidError(err.message || 'Failed to render diagram');
+        setMermaidSvg('');
+      }
+    };
+
+    renderMermaid();
+  }, [previewContent, diagramType, themeColors]);
+
   // Load initial content from VSCode and apply auto layout
   useEffect(() => {
     if (window.vscode) {
@@ -341,6 +377,7 @@ export function App() {
             
             // 延迟应用自动布局，确保节点已设置
             setTimeout(() => {
+              // 触发自动布局
               // 触发自动布局
               const dagreGraph = new dagre.graphlib.Graph();
               dagreGraph.setDefaultEdgeLabel(() => ({}));
@@ -637,16 +674,34 @@ export function App() {
               onChange={() => {}}
             />
           ) : diagramType === 'classDiagram' || diagramType === 'stateDiagram' ? (
-            <div style={{ padding: '20px', textAlign: 'center' }}>
-              <h3>{diagramType === 'classDiagram' ? 'Class Diagram' : 'State Diagram'} Editor</h3>
-              <p>Visual editor for {diagramType === 'classDiagram' ? 'class' : 'state'} diagrams is coming soon.</p>
-              <p>Please use the preview panel to view and edit the code.</p>
+            <div style={{ padding: '20px', height: '100%', overflow: 'auto' }}>
+              {mermaidError ? (
+                <div style={{ color: 'red', padding: '20px' }}>
+                  <h3>Render Error</h3>
+                  <p>{mermaidError}</p>
+                </div>
+              ) : mermaidSvg ? (
+                <div dangerouslySetInnerHTML={{ __html: mermaidSvg }} />
+              ) : (
+                <div style={{ textAlign: 'center' }}>
+                  <p>Rendering {diagramType}...</p>
+                </div>
+              )}
             </div>
           ) : diagramType === 'gantt' || diagramType === 'pie' ? (
-            <div style={{ padding: '20px', textAlign: 'center' }}>
-              <h3>{diagramType === 'gantt' ? 'Gantt Chart' : 'Pie Chart'} Editor</h3>
-              <p>Visual editor for {diagramType === 'gantt' ? 'Gantt' : 'pie'} charts is coming soon.</p>
-              <p>Please use the preview panel to view and edit the code.</p>
+            <div style={{ padding: '20px', height: '100%', overflow: 'auto' }}>
+              {mermaidError ? (
+                <div style={{ color: 'red', padding: '20px' }}>
+                  <h3>Render Error</h3>
+                  <p>{mermaidError}</p>
+                </div>
+              ) : mermaidSvg ? (
+                <div dangerouslySetInnerHTML={{ __html: mermaidSvg }} />
+              ) : (
+                <div style={{ textAlign: 'center' }}>
+                  <p>Rendering {diagramType}...</p>
+                </div>
+              )}
             </div>
           ) : (
             <div style={{ padding: '20px', textAlign: 'center' }}>
