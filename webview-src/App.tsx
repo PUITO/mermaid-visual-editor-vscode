@@ -20,6 +20,8 @@ import { serializeToMermaid, parseFromMermaid, MermaidConfig } from './mermaidSe
 import { initializeDiagramRegistry, diagramRegistry } from './diagrams';
 import { ERDiagramEditor } from './diagrams/erDiagram/editor';
 import { SequenceDiagramEditor } from './diagrams/sequence/editor';
+import { ClassDiagramHandler } from './diagrams/classDiagram/handler';
+import { StateDiagramHandler } from './diagrams/stateDiagram/handler';
 
 declare global {
   interface Window {
@@ -632,6 +634,12 @@ export function App() {
               model={{ participants: [], messages: [], notes: [] }}
               onChange={() => {}}
             />
+          ) : diagramType === 'classDiagram' || diagramType === 'stateDiagram' ? (
+            <div style={{ padding: '20px', textAlign: 'center' }}>
+              <h3>{diagramType === 'classDiagram' ? 'Class Diagram' : 'State Diagram'} Editor</h3>
+              <p>Visual editor for {diagramType === 'classDiagram' ? 'class' : 'state'} diagrams is coming soon.</p>
+              <p>Please use the preview panel to view and edit the code.</p>
+            </div>
           ) : (
             <div style={{ padding: '20px', textAlign: 'center' }}>
               <p>Visualization for {diagramType} is not yet implemented.</p>

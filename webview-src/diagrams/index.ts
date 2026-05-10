@@ -2,6 +2,8 @@ import { diagramRegistry } from './types';
 import { FlowchartHandler } from './flowchart/handler';
 import { ERDiagramHandler } from './erDiagram/handler';
 import { SequenceDiagramHandler } from './sequence/handler';
+import { ClassDiagramHandler } from './classDiagram/handler';
+import { StateDiagramHandler } from './stateDiagram/handler';
 
 /**
  * 初始化图表注册表
@@ -16,6 +18,12 @@ export function initializeDiagramRegistry() {
   
   // 注册序列图处理器
   diagramRegistry.register(new SequenceDiagramHandler());
+  
+  // 注册类图处理器
+  diagramRegistry.register(new ClassDiagramHandler());
+  
+  // 注册状态图处理器
+  diagramRegistry.register(new StateDiagramHandler());
   
   console.log('Diagram registry initialized with types:', diagramRegistry.getRegisteredTypes());
 }
@@ -35,3 +43,11 @@ export type { ERDiagramModel, Entity, Attribute, Relationship } from './erDiagra
 // 导出序列图相关
 export { SequenceDiagramHandler } from './sequence/handler';
 export type { SequenceDiagramModel, Participant, Message } from './sequence/handler';
+
+// 导出类图相关
+export { ClassDiagramHandler } from './classDiagram/handler';
+export type { ClassDiagramModel, ClassDef, ClassRelationship } from './classDiagram/handler';
+
+// 导出状态图相关
+export { StateDiagramHandler } from './stateDiagram/handler';
+export type { StateDiagramModel, StateDef, StateTransition } from './stateDiagram/handler';
