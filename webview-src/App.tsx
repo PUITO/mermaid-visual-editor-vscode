@@ -68,6 +68,8 @@ export function App() {
   const mermaidContainerRef = useRef<HTMLDivElement>(null);
   const [mermaidSvg, setMermaidSvg] = useState<string>('');
   const [mermaidError, setMermaidError] = useState<string | null>(null);
+  const [isRendering, setIsRendering] = useState(false);
+  const renderTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   
   // 右键菜单状态
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number; nodeId?: string; edgeId?: string } | null>(null);
@@ -331,28 +333,46 @@ export function App() {
     
     if (!shouldRenderWithMermaid || !previewContent) {
       setMermaidSvg('');
+      setIsRendering(false);
       return;
     }
 
-    const renderMermaid = async () => {
+    // 清除之前的定时器（防抖）
+    if (renderTimeoutRef.current) {
+      clearTimeout(renderTimeoutRef.current);
+    }
+
+    // 设置加载状态
+    setIsRendering(true);
+
+    // 防抖延迟 300ms
+    renderTimeoutRef.current = setTimeout(async () => {
       try {
         mermaid.initialize({
           startOnLoad: false,
           theme: themeColors ? 'dark' : 'default',
           securityLevel: 'loose',
+          fontFamily: 'var(--vscode-font-family, sans-serif)',
         });
 
-        const { svg } = await mermaid.render(`mermaid-${diagramType}`, previewContent);
+        const { svg } = await mermaid.render(`mermaid-${diagramType}-${Date.now()}`, previewContent);
         setMermaidSvg(svg);
         setMermaidError(null);
+        setIsRendering(false);
       } catch (err: any) {
         console.error('Mermaid render error:', err);
         setMermaidError(err.message || 'Failed to render diagram');
         setMermaidSvg('');
+        setIsRendering(false);
+      }
+    }, 300);
+
+    // 清理函数
+    return () => {
+      if (renderTimeoutRef.current) {
+        clearTimeout(renderTimeoutRef.current);
       }
     };
-
-    renderMermaid();
   }, [previewContent, diagramType, themeColors]);
 
   // Load initial content from VSCode and apply auto layout
@@ -676,30 +696,40 @@ export function App() {
           ) : diagramType === 'classDiagram' || diagramType === 'stateDiagram' ? (
             <div style={{ padding: '20px', height: '100%', overflow: 'auto' }}>
               {mermaidError ? (
-                <div style={{ color: 'red', padding: '20px' }}>
-                  <h3>Render Error</h3>
-                  <p>{mermaidError}</p>
+                <div style={{ color: 'var(--vscode-errorForeground)', padding: '20px', backgroundColor: 'var(--vscode-inputValidation-errorBackground)', border: '1px solid var(--vscode-inputValidation-errorBorder)', borderRadius: '4px' }}>
+                  <h3 style={{ margin: '0 0 10px 0' }}>Render Error</h3>
+                  <p style={{ margin: 0, fontSize: '12px' }}>{mermaidError}</p>
+                  <p style={{ margin: '10px 0 0 0', fontSize: '11px', opacity: 0.7 }}>Please check the Mermaid syntax in the preview panel.</p>
+                </div>
+              ) : isRendering ? (
+                <div style={{ textAlign: 'center', padding: '40px', opacity: 0.6 }}>
+                  <p>Rendering {diagramType}...</p>
                 </div>
               ) : mermaidSvg ? (
                 <div dangerouslySetInnerHTML={{ __html: mermaidSvg }} />
               ) : (
-                <div style={{ textAlign: 'center' }}>
-                  <p>Rendering {diagramType}...</p>
+                <div style={{ textAlign: 'center', padding: '40px', opacity: 0.5 }}>
+                  <p>No content to render</p>
                 </div>
               )}
             </div>
           ) : diagramType === 'gantt' || diagramType === 'pie' ? (
             <div style={{ padding: '20px', height: '100%', overflow: 'auto' }}>
               {mermaidError ? (
-                <div style={{ color: 'red', padding: '20px' }}>
-                  <h3>Render Error</h3>
-                  <p>{mermaidError}</p>
+                <div style={{ color: 'var(--vscode-errorForeground)', padding: '20px', backgroundColor: 'var(--vscode-inputValidation-errorBackground)', border: '1px solid var(--vscode-inputValidation-errorBorder)', borderRadius: '4px' }}>
+                  <h3 style={{ margin: '0 0 10px 0' }}>Render Error</h3>
+                  <p style={{ margin: 0, fontSize: '12px' }}>{mermaidError}</p>
+                  <p style={{ margin: '10px 0 0 0', fontSize: '11px', opacity: 0.7 }}>Please check the Mermaid syntax in the preview panel.</p>
+                </div>
+              ) : isRendering ? (
+                <div style={{ textAlign: 'center', padding: '40px', opacity: 0.6 }}>
+                  <p>Rendering {diagramType}...</p>
                 </div>
               ) : mermaidSvg ? (
                 <div dangerouslySetInnerHTML={{ __html: mermaidSvg }} />
               ) : (
-                <div style={{ textAlign: 'center' }}>
-                  <p>Rendering {diagramType}...</p>
+                <div style={{ textAlign: 'center', padding: '40px', opacity: 0.5 }}>
+                  <p>No content to render</p>
                 </div>
               )}
             </div>

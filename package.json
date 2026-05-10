@@ -2,7 +2,7 @@
   "name": "mermaid-visual-editor-vscode",
   "displayName": "Mermaid Visual Editor",
   "description": "A visual drag-and-drop editor for Mermaid (.mmd) files. Supports flowcharts, ER diagrams, sequence diagrams and more with interactive canvas editing.",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "publisher": "PUITO",
   "author": {
     "name": "PUITO",
