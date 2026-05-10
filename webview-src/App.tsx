@@ -25,6 +25,8 @@ import { ClassDiagramHandler } from './diagrams/classDiagram/handler';
 import { StateDiagramHandler } from './diagrams/stateDiagram/handler';
 import { GanttHandler } from './diagrams/gantt/handler';
 import { PieChartHandler } from './diagrams/pieChart/handler';
+import type { ERDiagramModel } from './diagrams/erDiagram/handler';
+import type { SequenceDiagramModel } from './diagrams/sequence/handler';
 
 declare global {
   interface Window {
@@ -73,6 +75,10 @@ export function App() {
   
   // 标记是否为原始内容（防止非 flowchart 类型被覆盖）
   const isOriginalContentRef = useRef<boolean>(false);
+  
+  // 存储解析后的模型数据（用于 ER 图和序列图编辑器）
+  const [erModel, setErModel] = useState<ERDiagramModel>({ entities: [], relationships: [] });
+  const [sequenceModel, setSequenceModel] = useState<SequenceDiagramModel>({ participants: [], messages: [], notes: [] });
   
   // 右键菜单状态
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number; nodeId?: string; edgeId?: string } | null>(null);
@@ -448,6 +454,31 @@ export function App() {
             // 对于其他图表类型，保留原始内容用于预览和保存
             setPreviewContent(message.content);
             setError(null); // 清除错误，因为这不是错误状态
+            
+            // 解析 ER 图和序列图数据，供编辑器使用
+            if (handler.type === 'erDiagram') {
+              try {
+                const erHandler = diagramRegistry.getHandlerByType('erDiagram');
+                if (erHandler) {
+                  const parsed = erHandler.parse(message.content);
+                  setErModel(parsed);
+                  console.log('[App] Parsed ER diagram:', parsed.entities.length, 'entities');
+                }
+              } catch (err) {
+                console.error('[App] Failed to parse ER diagram:', err);
+              }
+            } else if (handler.type === 'sequenceDiagram') {
+              try {
+                const seqHandler = diagramRegistry.getHandlerByType('sequenceDiagram');
+                if (seqHandler) {
+                  const parsed = seqHandler.parse(message.content);
+                  setSequenceModel(parsed);
+                  console.log('[App] Parsed sequence diagram:', parsed.participants.length, 'participants');
+                }
+              } catch (err) {
+                console.error('[App] Failed to parse sequence diagram:', err);
+              }
+            }
           }
         }
         
@@ -708,13 +739,19 @@ export function App() {
             </ReactFlow>
           ) : diagramType === 'erDiagram' ? (
             <ERDiagramEditor
-              model={{ entities: [], relationships: [] }}
-              onChange={() => {}}
+              model={erModel}
+              onChange={(newModel) => {
+                setErModel(newModel);
+                // TODO: 序列化并更新 previewContent
+              }}
             />
           ) : diagramType === 'sequenceDiagram' ? (
             <SequenceDiagramEditor
-              model={{ participants: [], messages: [], notes: [] }}
-              onChange={() => {}}
+              model={sequenceModel}
+              onChange={(newModel) => {
+                setSequenceModel(newModel);
+                // TODO: 序列化并更新 previewContent
+              }}
             />
           ) : diagramType === 'classDiagram' || diagramType === 'stateDiagram' ? (
             <div style={{ padding: '20px', height: '100%', overflow: 'auto' }}>

@@ -1,9 +1,12 @@
-graph TB
-    A[开始] --> B{条件判断}
-    B -->|是| C[处理1]
-    B -->|否| D[处理2]
-    C --> E[结束]
-    D --> E
+flowchart TB
+    A[开始]
+    B{条件判断}
+    C[处理1]
+    D[处理2]
+    E[结束]
+    A--> B
+    C--> E
+    D--> E
     style A fill:#4CAF50,stroke:#388E3C,color:white
     style B fill:#FF9800,stroke:#F57C00,color:white
     style E fill:#f44336,stroke:#d32f2f,color:white

@@ -1,10 +1,14 @@
-flowchart TD
-    Start[开始] --> Decision{是否成功?}
-    Decision -->|Yes| Success[成功处理]
-    Decision -->|No| Error[错误处理]
-    Success --> End[结束]
-    Error --> Retry[重试]
-    Retry --> Decision
+flowchart TB
+    Start[开始]
+    Decision{是否成功?}
+    Success[成功处理]
+    Error[错误处理]
+    End[结束]
+    Retry[重试]
+    Start--> Decision
+    Success--> End
+    Error--> Retry
+    Retry--> Decision
     style Start fill:#4CAF50,stroke:#388E3C,color:white
     style Decision fill:#FF9800,stroke:#F57C00,color:white
     style End fill:#f44336,stroke:#d32f2f,color:white
