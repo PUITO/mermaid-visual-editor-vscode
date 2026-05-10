@@ -285,13 +285,21 @@ export function App() {
 
   // Generate Mermaid syntax and send to VSCode
   useEffect(() => {
-    // 对于非 flowchart 类型，不要序列化 nodes/edges（它们是空的）
+    // 对于非 flowchart 类型，绝对不要序列化 nodes/edges（它们是空的）
     if (diagramType !== 'flowchart') {
+      console.log('[App] Skipping serialization for non-flowchart type:', diagramType);
+      return;
+    }
+    
+    // 防止空 nodes/edges 覆盖内容
+    if (nodes.length === 0 && edges.length === 0) {
+      console.log('[App] Skipping serialization for empty nodes/edges');
       return;
     }
     
     try {
       const mermaidCode = serializeToMermaid(nodes, edges, config);
+      console.log('[App] Serialized flowchart:', mermaidCode.substring(0, 50));
       setPreviewContent(mermaidCode);
       setError(null);
       
@@ -302,6 +310,7 @@ export function App() {
         });
       }
     } catch (err: any) {
+      console.error('[App] Serialization error:', err);
       setError(err.message);
     }
   }, [nodes, edges, config, diagramType]);
@@ -447,13 +456,22 @@ export function App() {
           try {
             let mermaidCode = '';
             
+            console.log('[App] requestSave triggered, diagramType:', diagramType);
+            console.log('[App] previewContent length:', previewContent?.length);
+            console.log('[App] previewContent preview:', previewContent?.substring(0, 100));
+            
             // 根据图表类型使用相应的处理器
             if (diagramType === 'flowchart') {
+              console.log('[App] Serializing flowchart');
               mermaidCode = serializeToMermaid(nodes, edges, config);
             } else {
               // 对于其他类型，直接使用预览内容
+              console.log('[App] Using previewContent for non-flowchart');
               mermaidCode = previewContent;
             }
+            
+            console.log('[App] Saving content, length:', mermaidCode?.length);
+            console.log('[App] Content preview:', mermaidCode?.substring(0, 100));
             
             if (window.vscode) {
               window.vscode.postMessage({
@@ -462,7 +480,7 @@ export function App() {
               });
             }
           } catch (err: any) {
-            console.error('Failed to serialize content:', err);
+            console.error('[App] Failed to serialize content:', err);
             if (window.vscode) {
               window.vscode.postMessage({
                 type: 'saveContent',
