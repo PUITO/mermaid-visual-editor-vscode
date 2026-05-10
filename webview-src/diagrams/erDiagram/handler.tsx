@@ -67,14 +67,78 @@ export class ERDiagramHandler implements DiagramHandler<ERDiagramModel> {
   }
 
   parse(code: string): ERDiagramModel {
-    // TODO: 实现 ER 图解析逻辑
-    // 这里需要解析 erDiagram 语法
-    console.log('Parsing ER diagram:', code);
+    const entities: Entity[] = [];
+    const relationships: Relationship[] = [];
+    const lines = code.split('\n');
     
-    return {
-      entities: [],
-      relationships: [],
-    };
+    let currentEntity: Entity | null = null;
+    let attrId = 1;
+    let relId = 1;
+    
+    lines.forEach(line => {
+      const trimmed = line.trim();
+      
+      // 跳过空行和注释
+      if (!trimmed || trimmed.startsWith('%%') || trimmed === 'erDiagram') return;
+      
+      // 检测实体定义（包含大括号的行）
+      if (trimmed.includes('{')) {
+        const entityMatch = trimmed.match(/(\w+)\s*\{/);
+        if (entityMatch) {
+          currentEntity = {
+            id: `entity-${entities.length + 1}`,
+            name: entityMatch[1],
+            attributes: [],
+          };
+        }
+      } else if (trimmed.includes('}')) {
+        // 实体定义结束
+        if (currentEntity) {
+          entities.push(currentEntity);
+          currentEntity = null;
+        }
+      } else if (currentEntity) {
+        // 解析属性
+        const attrMatch = trimmed.match(/(\w+)\s+(\w+)(?:\s*(PK|FK))?/);
+        if (attrMatch) {
+          currentEntity.attributes.push({
+            id: `attr-${attrId++}`,
+            type: attrMatch[1],
+            name: attrMatch[2],
+            isPrimaryKey: attrMatch[3] === 'PK',
+            isForeignKey: attrMatch[3] === 'FK',
+          });
+        }
+      } else {
+        // 解析关系
+        const relMatch = trimmed.match(/(\w+)\s*(\|\{|\}\||\|\||--|\{\})\s*(\w+)/);
+        if (relMatch) {
+          const source = relMatch[1];
+          const target = relMatch[3];
+          const symbol = relMatch[2];
+          
+          let relationshipType: 'one-to-one' | 'one-to-many' | 'many-to-many' = 'one-to-one';
+          if (symbol === '||--|{' || symbol === '|{-||') {
+            relationshipType = 'one-to-many';
+          } else if (symbol === '}|--|{' || symbol === '{-|{') {
+            relationshipType = 'many-to-many';
+          }
+          
+          // 提取标签（如果有）
+          const labelMatch = trimmed.match(/:\s*"([^"]+)"/);
+          
+          relationships.push({
+            id: `rel-${relId++}`,
+            sourceEntity: source,
+            targetEntity: target,
+            relationshipType,
+            label: labelMatch ? labelMatch[1] : undefined,
+          });
+        }
+      }
+    });
+    
+    return { entities, relationships };
   }
 
   toMermaid(model: ERDiagramModel): string {

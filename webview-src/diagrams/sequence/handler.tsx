@@ -55,14 +55,67 @@ export class SequenceDiagramHandler implements DiagramHandler<SequenceDiagramMod
   }
 
   parse(code: string): SequenceDiagramModel {
-    // TODO: 实现序列图解析逻辑
-    console.log('Parsing sequence diagram:', code);
+    const participants: Participant[] = [];
+    const messages: Message[] = [];
+    const notes: Array<{ text: string; over: string[] }> = [];
+    const lines = code.split('\n');
     
-    return {
-      participants: [],
-      messages: [],
-      notes: [],
-    };
+    let msgId = 1;
+    const participantMap = new Map<string, string>();
+    
+    lines.forEach(line => {
+      const trimmed = line.trim();
+      
+      // 跳过空行和注释
+      if (!trimmed || trimmed.startsWith('%%') || trimmed === 'sequenceDiagram') return;
+      
+      // 解析参与者
+      const participantMatch = trimmed.match(/participant\s+(\w+)(?:\s+as\s+(.+))?/);
+      if (participantMatch) {
+        const id = participantMatch[1];
+        const alias = participantMatch[2]?.trim();
+        
+        if (!participantMap.has(id)) {
+          participantMap.set(id, `participant-${participants.length + 1}`);
+          participants.push({
+            id: participantMap.get(id)!,
+            name: id,
+            alias: alias,
+          });
+        }
+        return;
+      }
+      
+      // 解析消息
+      const messageMatch = trimmed.match(/(\w+)\s*(-+>|->>)\s*(\w+):\s*(.+)/);
+      if (messageMatch) {
+        const from = participantMap.get(messageMatch[1]) || messageMatch[1];
+        const to = participantMap.get(messageMatch[3]) || messageMatch[3];
+        const arrow = messageMatch[2];
+        const message = messageMatch[4];
+        
+        messages.push({
+          id: `msg-${msgId++}`,
+          from,
+          to,
+          message,
+          type: arrow.includes('--') ? 'dashed' : 'solid',
+        });
+        return;
+      }
+      
+      // 解析注释
+      const noteMatch = trimmed.match(/Note\s+over\s+([\w,]+):\s*(.+)/);
+      if (noteMatch) {
+        const overStr = noteMatch[1];
+        const text = noteMatch[2];
+        const over = overStr.split(',').map(s => s.trim());
+        
+        notes.push({ text, over });
+      }
+    });
+    
+    return { participants, messages, notes };
   }
 
   toMermaid(model: SequenceDiagramModel): string {

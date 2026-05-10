@@ -572,6 +572,19 @@ export function App() {
         <button onClick={() => setPreviewVisible(!previewVisible)}>
           {previewVisible ? 'Hide' : 'Show'} Preview
         </button>
+        
+        {/* 显示当前图表类型 */}
+        <div style={{ 
+          marginLeft: 'auto', 
+          padding: '4px 12px', 
+          backgroundColor: themeColors?.toolbarBackground || '#f3f3f3',
+          borderRadius: '4px',
+          fontSize: '12px',
+          color: themeColors?.editorForeground || '#000000',
+          border: `1px solid ${themeColors?.borderColor || '#cccccc'}`
+        }}>
+          Type: {diagramType}
+        </div>
       </div>
 
       <div className="main-content">
