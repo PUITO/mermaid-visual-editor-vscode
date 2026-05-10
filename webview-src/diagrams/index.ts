@@ -6,6 +6,7 @@ import { ClassDiagramHandler } from './classDiagram/handler';
 import { StateDiagramHandler } from './stateDiagram/handler';
 import { GanttHandler } from './gantt/handler';
 import { PieChartHandler } from './pieChart/handler';
+import { GenericHandler } from './generic/handler';
 
 /**
  * 初始化图表注册表
@@ -32,6 +33,12 @@ export function initializeDiagramRegistry() {
   
   // 注册饼图处理器
   diagramRegistry.register(new PieChartHandler());
+  
+  // 注册通用处理器（用于未明确支持的图表类型）
+  diagramRegistry.register(new GenericHandler('requirementDiagram'));
+  diagramRegistry.register(new GenericHandler('gitGraph'));
+  diagramRegistry.register(new GenericHandler('journey'));
+  diagramRegistry.register(new GenericHandler('graph'));  // graph TB, graph LR 等
   
   console.log('Diagram registry initialized with types:', diagramRegistry.getRegisteredTypes());
 }

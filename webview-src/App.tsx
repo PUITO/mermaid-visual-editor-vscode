@@ -793,6 +793,26 @@ export function App() {
                 </div>
               )}
             </div>
+          ) : ['requirementDiagram', 'gitGraph', 'journey', 'graph'].includes(diagramType) ? (
+            // 使用通用处理器渲染
+            <div style={{ padding: '20px', height: '100%', overflow: 'auto' }}>
+              <h3>{diagramType} Diagram</h3>
+              <p>This diagram type is not yet fully supported for visual editing.</p>
+              <p>Please edit the Mermaid code directly in the preview panel.</p>
+              {previewContent && (
+                <pre style={{ 
+                  backgroundColor: 'var(--vscode-editor-background)',
+                  padding: '16px',
+                  borderRadius: '4px',
+                  overflow: 'auto',
+                  maxHeight: '400px',
+                  fontSize: '12px',
+                  lineHeight: '1.5'
+                }}>
+                  {previewContent}
+                </pre>
+              )}
+            </div>
           ) : (
             <div style={{ padding: '20px', textAlign: 'center' }}>
               <p>Visualization for {diagramType} is not yet implemented.</p>
