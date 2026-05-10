@@ -22,6 +22,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write  # 允许创建 Release 和上传文件
+      pull-requests: read  # 允许读取拉取请求,用于生成 release notes
     
     steps:
       - name: Checkout code
