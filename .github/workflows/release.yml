@@ -2,21 +2,14 @@ name: Release and Publish
 
 on:
   push:
-    branches:
-      - master  # 只在 master 分支上监听
     tags:
-      - 'v*'  # 当推送版本标签时触发，如 v1.0.0
-  workflow_dispatch:  # 允许手动触发
+      - 'v*'  # 只在推送版本标签时触发，如 v1.0.0
+  workflow_dispatch:  # 允许手动触发（用于测试发布）
     inputs:
       version:
         description: '版本号 (例如: 1.0.0)'
-        required: true
-        type: string
-      publish_to_marketplace:
-        description: '发布到 VSCode Marketplace'
         required: false
-        default: true
-        type: boolean
+        type: string
       create_release:
         description: '创建 GitHub Release'
         required: false
@@ -56,23 +49,11 @@ jobs:
       
       - name: Create GitHub Release
         if: github.event_name == 'push' || github.event.inputs.create_release == 'true'
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           files: mermaid-visual-editor-vscode.vsix
           generate_release_notes: true
           draft: false
-          prerelease: false
+          prerelease: ${{ contains(github.ref_name, '-alpha') || contains(github.ref_name, '-beta') || contains(github.ref_name, '-rc') }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      
-      - name: Publish to VSCode Marketplace
-        if: github.event_name == 'push' || github.event.inputs.publish_to_marketplace == 'true'
-        run: npx vsce publish --packagePath mermaid-visual-editor-vscode.vsix
-        env:
-          VSCE_PAT: ${{ secrets.VSCE_PAT }}
-      
-      - name: Publish to Open VSX Registry
-        if: github.event_name == 'push' || github.event.inputs.publish_to_marketplace == 'true'
-        run: npx ovsx publish --packagePath mermaid-visual-editor-vscode.vsix
-        env:
-          OVSX_PAT: ${{ secrets.OVSX_PAT }}
