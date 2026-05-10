@@ -1,4 +1,5 @@
 import { DiagramHandler, EditorProps } from '../types';
+import { SequenceDiagramEditor } from './editor';
 
 /**
  * 序列图参与者
@@ -28,20 +29,6 @@ export interface SequenceDiagramModel {
   messages: Message[];
   notes?: Array<{ text: string; over: string[] }>;
 }
-
-/**
- * 序列图编辑器组件
- */
-const SequenceDiagramEditor: React.FC<EditorProps<SequenceDiagramModel>> = ({ model, onChange }) => {
-  return (
-    <div style={{ padding: '20px' }}>
-      <h3>Sequence Diagram Editor</h3>
-      <p>Participants: {model.participants.length}</p>
-      <p>Messages: {model.messages.length}</p>
-      {/* TODO: 实现完整的序列图编辑器 */}
-    </div>
-  );
-};
 
 /**
  * 序列图处理器
