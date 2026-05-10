@@ -154,10 +154,7 @@ export function App() {
       const message = event.data;
       if (message.type === 'themeChanged') {
         handleThemeChange();
-        // 重新应用 Mermaid 主题
-        if (window.vscode) {
-          window.vscode.postMessage({ type: 'updateContent' });
-        }
+        // 主题变化不需要发送 updateContent，因为内容没有改变
       }
     });
 
@@ -246,11 +243,7 @@ export function App() {
         };
         addNode(newNode);
         
-        if (window.vscode) {
-          window.vscode.postMessage({
-            type: 'updateContent',
-          });
-        }
+        // 添加节点后不需要立即发送 updateContent，useEffect 会自动处理
       }
     },
     [addNode]
@@ -439,9 +432,8 @@ export function App() {
 
               setNodes(layoutedNodes);
               
-              if (window.vscode) {
-                window.vscode.postMessage({ type: 'updateContent' });
-              }
+              // 布局完成后，useEffect 会自动序列化并发送 updateContent
+              // 不需要手动发送
             }, 100);
           } else {
             // 对于其他图表类型，保留原始内容用于预览和保存
