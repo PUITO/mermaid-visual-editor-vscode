@@ -1,4 +1,5 @@
 import { DiagramHandler, EditorProps } from '../types';
+import { ERDiagramEditor } from './editor';
 
 /**
  * ER 图实体
@@ -38,22 +39,6 @@ export interface ERDiagramModel {
   entities: Entity[];
   relationships: Relationship[];
 }
-
-/**
- * ER 图编辑器组件
- */
-const ERDiagramEditor: React.FC<EditorProps<ERDiagramModel>> = ({ model, onChange }) => {
-  // ER 图编辑器实现
-  // 初期可以使用表单编辑 + Mermaid 渲染的方式
-  return (
-    <div style={{ padding: '20px' }}>
-      <h3>ER Diagram Editor</h3>
-      <p>Entities: {model.entities.length}</p>
-      <p>Relationships: {model.relationships.length}</p>
-      {/* TODO: 实现完整的 ER 图编辑器 */}
-    </div>
-  );
-};
 
 /**
  * ER 图处理器
