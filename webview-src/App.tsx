@@ -22,6 +22,8 @@ import { ERDiagramEditor } from './diagrams/erDiagram/editor';
 import { SequenceDiagramEditor } from './diagrams/sequence/editor';
 import { ClassDiagramHandler } from './diagrams/classDiagram/handler';
 import { StateDiagramHandler } from './diagrams/stateDiagram/handler';
+import { GanttHandler } from './diagrams/gantt/handler';
+import { PieChartHandler } from './diagrams/pieChart/handler';
 
 declare global {
   interface Window {
@@ -638,6 +640,12 @@ export function App() {
             <div style={{ padding: '20px', textAlign: 'center' }}>
               <h3>{diagramType === 'classDiagram' ? 'Class Diagram' : 'State Diagram'} Editor</h3>
               <p>Visual editor for {diagramType === 'classDiagram' ? 'class' : 'state'} diagrams is coming soon.</p>
+              <p>Please use the preview panel to view and edit the code.</p>
+            </div>
+          ) : diagramType === 'gantt' || diagramType === 'pie' ? (
+            <div style={{ padding: '20px', textAlign: 'center' }}>
+              <h3>{diagramType === 'gantt' ? 'Gantt Chart' : 'Pie Chart'} Editor</h3>
+              <p>Visual editor for {diagramType === 'gantt' ? 'Gantt' : 'pie'} charts is coming soon.</p>
               <p>Please use the preview panel to view and edit the code.</p>
             </div>
           ) : (

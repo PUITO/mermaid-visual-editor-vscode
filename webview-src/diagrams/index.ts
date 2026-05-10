@@ -4,6 +4,8 @@ import { ERDiagramHandler } from './erDiagram/handler';
 import { SequenceDiagramHandler } from './sequence/handler';
 import { ClassDiagramHandler } from './classDiagram/handler';
 import { StateDiagramHandler } from './stateDiagram/handler';
+import { GanttHandler } from './gantt/handler';
+import { PieChartHandler } from './pieChart/handler';
 
 /**
  * 初始化图表注册表
@@ -24,6 +26,12 @@ export function initializeDiagramRegistry() {
   
   // 注册状态图处理器
   diagramRegistry.register(new StateDiagramHandler());
+  
+  // 注册甘特图处理器
+  diagramRegistry.register(new GanttHandler());
+  
+  // 注册饼图处理器
+  diagramRegistry.register(new PieChartHandler());
   
   console.log('Diagram registry initialized with types:', diagramRegistry.getRegisteredTypes());
 }
@@ -51,3 +59,11 @@ export type { ClassDiagramModel, ClassDef, ClassRelationship } from './classDiag
 // 导出状态图相关
 export { StateDiagramHandler } from './stateDiagram/handler';
 export type { StateDiagramModel, StateDef, StateTransition } from './stateDiagram/handler';
+
+// 导出甘特图相关
+export { GanttHandler } from './gantt/handler';
+export type { GanttModel, GanttTask } from './gantt/handler';
+
+// 导出饼图相关
+export { PieChartHandler } from './pieChart/handler';
+export type { PieChartModel, PieItem } from './pieChart/handler';
