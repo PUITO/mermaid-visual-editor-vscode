@@ -700,7 +700,7 @@ export function App() {
         <button onClick={handleCopySyntax}>Copy Syntax</button>
         <button onClick={handleExportMmd}>Export .mmd</button>
         <button onClick={() => setPreviewVisible(!previewVisible)}>
-          {previewVisible ? 'Hide' : 'Show'} Preview
+          {previewVisible ? 'Hide Code' : 'Show Code'}
         </button>
         
         {/* 显示当前图表类型 */}
@@ -803,7 +803,7 @@ export function App() {
 
         {previewVisible && (
           <div className="preview-panel">
-            <div className="preview-header">Mermaid Syntax</div>
+            <div className="preview-header">Mermaid Code</div>
             <div className="preview-content">
               {error ? (
                 <div className="error-message">{error}</div>
