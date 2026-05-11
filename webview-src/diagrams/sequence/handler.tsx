@@ -75,7 +75,7 @@ export class SequenceDiagramHandler implements DiagramHandler<SequenceDiagramMod
       }
       
       // 解析消息
-      const messageMatch = trimmed.match(/(\w+)\s*(-*>+?)\s*(\w+):\s*(.+)/);
+      const messageMatch = trimmed.match(/(\w+)\s*(-{0,2}>{1,2})\s*(\w+):\s*(.+)/);
       if (messageMatch) {
         const fromName = messageMatch[1];
         const toName = messageMatch[3];
@@ -87,7 +87,7 @@ export class SequenceDiagramHandler implements DiagramHandler<SequenceDiagramMod
           from: fromName,  // 使用原始名称
           to: toName,      // 使用原始名称
           message,
-          type: arrow.includes('-') ? 'dashed' : 'solid',
+          type: arrow.startsWith('-') ? 'dashed' : 'solid',
         });
         return;
       }
