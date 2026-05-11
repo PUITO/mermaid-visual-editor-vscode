@@ -16,6 +16,7 @@ import mermaid from 'mermaid';
 
 import { CustomNode } from './CustomNode';
 import { ContextMenu } from './ContextMenu';
+import { SplitEditor } from './SplitEditor';
 import { useDiagramStore, DiagramNode, DiagramEdge } from './store';
 import { serializeToMermaid, parseFromMermaid, MermaidConfig } from './mermaidSerializer';
 import { initializeDiagramRegistry, diagramRegistry } from './diagrams';
@@ -753,66 +754,25 @@ export function App() {
                 // TODO: 序列化并更新 previewContent
               }}
             />
-          ) : diagramType === 'classDiagram' || diagramType === 'stateDiagram' ? (
-            <div style={{ padding: '20px', height: '100%', overflow: 'auto' }}>
-              {mermaidError ? (
-                <div style={{ color: 'var(--vscode-errorForeground)', padding: '20px', backgroundColor: 'var(--vscode-inputValidation-errorBackground)', border: '1px solid var(--vscode-inputValidation-errorBorder)', borderRadius: '4px' }}>
-                  <h3 style={{ margin: '0 0 10px 0' }}>Render Error</h3>
-                  <p style={{ margin: 0, fontSize: '12px' }}>{mermaidError}</p>
-                  <p style={{ margin: '10px 0 0 0', fontSize: '11px', opacity: 0.7 }}>Please check the Mermaid syntax in the preview panel.</p>
-                </div>
-              ) : isRendering ? (
-                <div style={{ textAlign: 'center', padding: '40px', opacity: 0.6 }}>
-                  <p>Rendering {diagramType}...</p>
-                </div>
-              ) : mermaidSvg ? (
-                <div dangerouslySetInnerHTML={{ __html: mermaidSvg }} />
-              ) : (
-                <div style={{ textAlign: 'center', padding: '40px', opacity: 0.5 }}>
-                  <p>No content to render</p>
-                </div>
-              )}
-            </div>
-          ) : diagramType === 'gantt' || diagramType === 'pie' ? (
-            <div style={{ padding: '20px', height: '100%', overflow: 'auto' }}>
-              {mermaidError ? (
-                <div style={{ color: 'var(--vscode-errorForeground)', padding: '20px', backgroundColor: 'var(--vscode-inputValidation-errorBackground)', border: '1px solid var(--vscode-inputValidation-errorBorder)', borderRadius: '4px' }}>
-                  <h3 style={{ margin: '0 0 10px 0' }}>Render Error</h3>
-                  <p style={{ margin: 0, fontSize: '12px' }}>{mermaidError}</p>
-                  <p style={{ margin: '10px 0 0 0', fontSize: '11px', opacity: 0.7 }}>Please check the Mermaid syntax in the preview panel.</p>
-                </div>
-              ) : isRendering ? (
-                <div style={{ textAlign: 'center', padding: '40px', opacity: 0.6 }}>
-                  <p>Rendering {diagramType}...</p>
-                </div>
-              ) : mermaidSvg ? (
-                <div dangerouslySetInnerHTML={{ __html: mermaidSvg }} />
-              ) : (
-                <div style={{ textAlign: 'center', padding: '40px', opacity: 0.5 }}>
-                  <p>No content to render</p>
-                </div>
-              )}
-            </div>
-          ) : ['requirementDiagram', 'gitGraph', 'journey', 'graph'].includes(diagramType) ? (
-            // 使用通用处理器渲染
-            <div style={{ padding: '20px', height: '100%', overflow: 'auto' }}>
-              <h3>{diagramType} Diagram</h3>
-              <p>This diagram type is not yet fully supported for visual editing.</p>
-              <p>Please edit the Mermaid code directly in the preview panel.</p>
-              {previewContent && (
-                <pre style={{ 
-                  backgroundColor: 'var(--vscode-editor-background)',
-                  padding: '16px',
-                  borderRadius: '4px',
-                  overflow: 'auto',
-                  maxHeight: '400px',
-                  fontSize: '12px',
-                  lineHeight: '1.5'
-                }}>
-                  {previewContent}
-                </pre>
-              )}
-            </div>
+          ) : ['classDiagram', 'stateDiagram', 'gantt', 'pie', 'requirementDiagram', 'gitGraph', 'journey', 'graph'].includes(diagramType) ? (
+            // 使用双栏编辑器：左侧 SVG 预览，右侧代码编辑
+            <SplitEditor
+              svgContent={mermaidSvg}
+              codeContent={previewContent}
+              onCodeChange={(newCode) => {
+                setPreviewContent(newCode);
+                // 立即发送更新到 VS Code
+                if (window.vscode) {
+                  window.vscode.postMessage({
+                    type: 'updateContent',
+                    content: newCode,
+                  });
+                }
+              }}
+              isRendering={isRendering}
+              error={mermaidError}
+              diagramType={diagramType}
+            />
           ) : (
             <div style={{ padding: '20px', textAlign: 'center' }}>
               <p>Visualization for {diagramType} is not yet implemented.</p>
