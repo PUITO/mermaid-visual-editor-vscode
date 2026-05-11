@@ -128,18 +128,9 @@ export class ERDiagramHandler implements DiagramHandler<ERDiagramModel> {
   }
 
   toMermaid(model: ERDiagramModel): string {
-    // TODO: 实现 ER 图序列化逻辑
     let mermaidCode = 'erDiagram\n';
     
-    model.entities.forEach(entity => {
-      mermaidCode += `    ${entity.name} {\n`;
-      entity.attributes.forEach(attr => {
-        const keyType = attr.isPrimaryKey ? 'PK' : attr.isForeignKey ? 'FK' : '';
-        mermaidCode += `        ${attr.type} ${attr.name}${keyType ? ' ' + keyType : ''}\n`;
-      });
-      mermaidCode += `    }\n`;
-    });
-    
+    // 先输出关系
     model.relationships.forEach(rel => {
       let relSymbol = '||--||';
       if (rel.relationshipType === 'one-to-many') {
@@ -152,6 +143,16 @@ export class ERDiagramHandler implements DiagramHandler<ERDiagramModel> {
         mermaidCode += ` : "${rel.label}"`;
       }
       mermaidCode += '\n';
+    });
+    
+    // 再输出实体
+    model.entities.forEach(entity => {
+      mermaidCode += `\n    ${entity.name} {\n`;
+      entity.attributes.forEach(attr => {
+        const keyType = attr.isPrimaryKey ? 'PK' : attr.isForeignKey ? 'FK' : '';
+        mermaidCode += `        ${attr.type} ${attr.name}${keyType ? ' ' + keyType : ''}\n`;
+      });
+      mermaidCode += `    }\n`;
     });
     
     return mermaidCode;
