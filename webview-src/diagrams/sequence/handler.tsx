@@ -87,7 +87,7 @@ export class SequenceDiagramHandler implements DiagramHandler<SequenceDiagramMod
           from: fromName,  // 使用原始名称
           to: toName,      // 使用原始名称
           message,
-          type: arrow.startsWith('-') ? 'dashed' : 'solid',
+          type: (arrow.startsWith('-') ? 'dashed' : 'solid') as 'solid' | 'dashed',
         });
         return;
       }
@@ -118,7 +118,9 @@ export class SequenceDiagramHandler implements DiagramHandler<SequenceDiagramMod
     });
     
     model.messages.forEach(message => {
-      const arrow = message.type === 'dashed' ? '-->>' : '->>';
+      // 确保 type 字段有默认值
+      const messageType = message.type || 'solid';
+      const arrow = messageType === 'dashed' ? '-->>' : '->>';
       mermaidCode += `    ${message.from}${arrow}${message.to}: ${message.message}\n`;
     });
     
