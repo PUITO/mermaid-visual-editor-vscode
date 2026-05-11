@@ -95,29 +95,30 @@ export class ERDiagramHandler implements DiagramHandler<ERDiagramModel> {
           });
         }
       } else {
-        // 解析关系
-        const relMatch = trimmed.match(/(\w+)\s*(\|\{|\}\||\|\||--|\{\})\s*(\w+)/);
+        // 解析关系（支持多种符号：||--||, ||--|{, ||--o{, }|--|{ 等）
+        const relMatch = trimmed.match(/(\w+)\s*(\|?[{}o]?--\|?[{}o]?)\s*(\w+)(?:\s*:\s*"([^"]+)")?/);
         if (relMatch) {
           const source = relMatch[1];
           const target = relMatch[3];
           const symbol = relMatch[2];
+          const label = relMatch[4];
           
+          // 根据符号判断关系类型
           let relationshipType: 'one-to-one' | 'one-to-many' | 'many-to-many' = 'one-to-one';
-          if (symbol === '||--|{' || symbol === '|{-||') {
+          if (symbol.includes('{') && !symbol.startsWith('{')) {
+            // 目标端是多（如 ||--|{, ||--o{）
             relationshipType = 'one-to-many';
-          } else if (symbol === '}|--|{' || symbol === '{-|{') {
+          } else if (symbol.startsWith('{') || (symbol.includes('{') && symbol.indexOf('{') < symbol.lastIndexOf('{'))) {
+            // 两端都是多（如 }|--|{）
             relationshipType = 'many-to-many';
           }
-          
-          // 提取标签（如果有）
-          const labelMatch = trimmed.match(/:\s*"([^"]+)"/);
           
           relationships.push({
             id: `rel-${relId++}`,
             sourceEntity: source,
             targetEntity: target,
             relationshipType,
-            label: labelMatch ? labelMatch[1] : undefined,
+            label,
           });
         }
       }
