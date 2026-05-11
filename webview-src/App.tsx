@@ -388,7 +388,12 @@ export function App() {
         setIsRendering(false);
       } catch (err: any) {
         console.error('Mermaid render error:', err);
-        setMermaidError(err.message || 'Failed to render diagram');
+        // 提供更友好的错误信息
+        let errorMessage = err.message || 'Failed to render diagram';
+        if (errorMessage.includes('Lexical error') || errorMessage.includes('Unrecognized text')) {
+          errorMessage = `This diagram type (${diagramType}) may not be fully supported in the current Mermaid version.\n\nPlease edit the code directly. The visual preview is not available for this chart type.`;
+        }
+        setMermaidError(errorMessage);
         setMermaidSvg('');
         setIsRendering(false);
       }
