@@ -82,14 +82,23 @@ export class SequenceDiagramHandler implements DiagramHandler<SequenceDiagramMod
         const arrow = messageMatch[2];
         const message = messageMatch[4];
         
+        // 调试日志
+        console.log('[SequenceHandler] Parsing message:', { fromName, toName, arrow, message, arrowLength: arrow.length, arrowCodePoints: Array.from(arrow).map(c => c.codePointAt(0)) });
+        
         messages.push({
           id: `msg-${msgId++}`,
           from: fromName,  // 使用原始名称
           to: toName,      // 使用原始名称
           message,
-          type: (arrow.startsWith('-') ? 'dashed' : 'solid') as 'solid' | 'dashed',
+          // 判断虚线：统计横杠数量，>=2 为虚线
+          type: ((arrow.match(/-/g) || []).length >= 2 ? 'dashed' : 'solid') as 'solid' | 'dashed',
         });
         return;
+      }
+      
+      // 如果匹配失败，输出调试信息
+      if (trimmed && !trimmed.startsWith('%%') && trimmed !== 'sequenceDiagram') {
+        console.log('[SequenceHandler] Failed to parse line:', trimmed);
       }
       
       // 解析注释
@@ -102,6 +111,9 @@ export class SequenceDiagramHandler implements DiagramHandler<SequenceDiagramMod
         notes.push({ text, over });
       }
     });
+    
+    // 调试日志：输出最终的消息列表
+    console.log('[SequenceHandler] Final messages:', messages.map(m => ({ id: m.id, type: m.type, from: m.from })));
     
     return { participants, messages, notes };
   }
