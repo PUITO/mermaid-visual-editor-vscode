@@ -42,6 +42,56 @@
 - **多种节点形状**：支持矩形、圆角、菱形、圆形等多种形状
 - **智能布局**：一键自动排列节点位置
 
+## Markdown 文件中嵌入 Mermaid 图表
+
+如果您需要在 Markdown 文件中嵌入 Mermaid 图表并渲染为图片，可以使用以下方法：
+
+### 方法一：使用 Markdown Preview Enhanced 插件（推荐）
+
+**安装插件：**
+- [Markdown Preview Enhanced](https://marketplace.visualstudio.com/items?itemName=shd101wyy.markdown-preview-enhanced)
+
+**嵌入语法：**
+
+```markdown
+<!-- @import "./diagram.mermaid" {class="mermaid"} -->
+```
+
+**重要说明：**
+- `.mmd` 文件：仅作为代码文件存储，不会自动渲染为图片
+- `.mermaid` 文件：可以被 Markdown Preview Enhanced 识别并渲染为图表
+- 必须使用 `<!-- @import "..." {class="mermaid"} -->` 语法才能正确渲染
+- 旧的 `<!-- mmd: ... -->` 语法不被支持
+
+**示例：**
+
+```markdown
+# 我的文档
+
+这是一个流程图：
+
+<!-- @import "./test-graph.mermaid" {class="mermaid"} -->
+
+这是另一个图表：
+
+<!-- @import "./flowchart.mermaid" {class="mermaid"} -->
+```
+
+### 方法二：直接使用 Mermaid 代码块
+
+```markdown
+```mermaid
+flowchart TD
+    A[开始] --> B{条件}
+    B -->|是| C[处理]
+    B -->|否| D[结束]
+```
+```
+
+这种方式会在支持 Mermaid 的 Markdown 预览中直接渲染图表。
+
+---
+
 ## 支持的图表类型
 
 目前专注于**流程图**，更多图表类型计划中：
@@ -238,6 +288,15 @@ GitHub Actions 将自动：
 - 实时协作功能
 
 ## 发布说明
+
+### 1.0.0
+
+- 支持多种图表类型（流程图、时序图、类图、状态图、ER图等）
+- 双栏编辑器：可视化编辑 + Mermaid 代码实时同步
+- Open in Editor 功能：一键在 VS Code 原生编辑器中打开
+- 完整的主题适配：自动跟随 VS Code 主题
+- 改进的解析器和序列化器，保持符号完整性
+- Markdown 文件嵌入支持：使用 MPE 插件渲染外部图表
 
 ### 0.0.1
 
