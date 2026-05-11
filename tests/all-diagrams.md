@@ -6,34 +6,46 @@
 
 **需要安装 Markdown Preview Enhanced 扩展**
 
-本文件使用 Markdown Preview Enhanced 的图表嵌入语法来无缝加载外部 `.mmd` 文件。请确保已安装以下扩展：
+本文件使用 Markdown Preview Enhanced 的图表嵌入语法来加载外部 Mermaid 文件。请确保已安装以下扩展：
 
 - **Markdown Preview Enhanced** (by Yiyi Wang)
   - VS Code Marketplace: [链接](https://marketplace.visualstudio.com/items?itemName=shd101wyy.markdown-preview-enhanced)
   - GitHub: [项目地址](https://github.com/shd101wyy/vscode-markdown-preview-enhanced)
+
+### 重要说明
+
+**文件格式与渲染方式：**
+
+1. **`.mmd` 文件**：仅作为代码文件存储，不会自动渲染为图片
+2. **`.mermaid` 文件**：可以被 Markdown Preview Enhanced 识别并渲染为图表
+
+**嵌入语法：**
+
+Markdown Preview Enhanced **仅支持**以下语法导入 `.mermaid` 文件：
+
+```markdown
+<!-- @import "./diagram.mermaid" -->
+```
+
+**注意**：
+- `<!-- mmd: diagram.mmd -->` 语法**不被支持**，无法渲染图表
+- 必须使用 `.mermaid` 后缀的文件才能被正确识别和渲染
+- `.mmd` 文件只能显示原始代码，不会生成可视化图表
 
 ### 使用方法
 
 1. 安装 Markdown Preview Enhanced 扩展
 2. 打开此文件
 3. 右键选择 "Markdown Preview Enhanced: Open Preview to the Side"
-4. 图表将自动从对应的 `.mmd` 文件加载并渲染
-
-### 嵌入语法说明
-
-```markdown
-<!-- mmd: diagram.mmd -->
-```
-
-此语法会在预览时自动加载并渲染指定的 Mermaid 文件，实现代码与展示的分离。
+4. 只有使用 `<!-- @import "...mermaid" -->` 语法的图表才会被渲染
 
 ---
 
 ## 1. Graph (基础图)
 
-来源：[test-graph.mmd](./test-graph.mmd)
+来源：[test-graph.mermaid](./test-graph.mermaid)
 
-<!-- mmd: test-graph.mmd -->
+<!-- @import "./test-graph.mermaid" -->
 
 ---
 
@@ -41,7 +53,7 @@
 
 来源：[test-flowchart.mmd](./test-flowchart.mmd)
 
-<!-- mmd: test-flowchart.mmd -->
+<!-- @import "./test-flowchart.mermaid" -->
 
 ---
 
@@ -49,7 +61,7 @@
 
 来源：[test-sequence.mmd](./test-sequence.mmd)
 
-<!-- mmd: test-sequence.mmd -->
+<!-- @import "./test-sequence.mmd" {class="mermaid"} -->
 
 ---
 
@@ -57,7 +69,7 @@
 
 来源：[test-class.mmd](./test-class.mmd)
 
-<!-- mmd: test-class.mmd -->
+<!-- @import "./test-class.mmd" {class="mermaid"} -->
 
 ---
 
@@ -65,7 +77,7 @@
 
 来源：[test-state.mmd](./test-state.mmd)
 
-<!-- mmd: test-state.mmd -->
+<!-- @import "./test-state.mmd" {class="mermaid"} -->
 
 ---
 
@@ -73,7 +85,7 @@
 
 来源：[test-gantt.mmd](./test-gantt.mmd)
 
-<!-- mmd: test-gantt.mmd -->
+<!-- @import "./test-gantt.mmd" {class="mermaid"} -->
 
 ---
 
@@ -81,7 +93,7 @@
 
 来源：[test-pie.mmd](./test-pie.mmd)
 
-<!-- mmd: test-pie.mmd -->
+<!-- @import "./test-pie.mmd" {class="mermaid"} -->
 
 ---
 
@@ -89,7 +101,7 @@
 
 来源：[test-journey.mmd](./test-journey.mmd)
 
-<!-- mmd: test-journey.mmd -->
+<!-- @import "./test-journey.mmd" {class="mermaid"} -->
 
 ---
 
@@ -97,7 +109,7 @@
 
 来源：[test-gitgraph.mmd](./test-gitgraph.mmd)
 
-<!-- mmd: test-gitgraph.mmd -->
+<!-- @import "./test-gitgraph.mmd" {class="mermaid"} -->
 
 ---
 
@@ -105,7 +117,7 @@
 
 来源：[test-er.mmd](./test-er.mmd)
 
-<!-- mmd: test-er.mmd -->
+<!-- @import "./test-er.mmd" {class="mermaid"} -->
 
 ---
 
@@ -115,7 +127,7 @@
 
 > **注意**: `requirementDiagram` 语法需要 Mermaid 11+ 版本。当前项目使用 Mermaid 10.6.0，此图表可能无法正确渲染。
 
-<!-- mmd: test-requirement.mmd -->
+<!-- @import "./test-requirement.mmd" {class="mermaid"} -->
 
 ---
 
@@ -125,7 +137,7 @@
 
 > **注意**: `architecture-beta` 语法需要 Mermaid 11+ 版本。当前项目使用 Mermaid 10.6.0，此图表可能无法正确渲染。
 
-<!-- mmd: test-architecture.mmd -->
+<!-- @import "./test-architecture.mmd" {class="mermaid"} -->
 
 ---
 
