@@ -178,6 +178,10 @@ export const SequenceDiagramEditor: React.FC<EditorProps<SequenceDiagramModel>> 
       borderRadius: '4px',
       marginRight: '10px',
     },
+    option: {
+      backgroundColor: 'var(--vscode-dropdown-background)',
+      color: 'var(--vscode-dropdown-foreground)',
+    },
     card: {
       padding: '15px',
       marginBottom: '10px',
@@ -287,7 +291,7 @@ export const SequenceDiagramEditor: React.FC<EditorProps<SequenceDiagramModel>> 
                   onChange={(e) => updateMessage(message.id, { from: e.target.value })}
                 >
                   {model.participants.map(p => (
-                    <option key={p.id} value={p.id}>{p.name}{p.alias ? ` (${p.alias})` : ''}</option>
+                    <option key={p.id} style={styles.option} value={p.id}>{p.name}{p.alias ? ` (${p.alias})` : ''}</option>
                   ))}
                 </select>
 
@@ -296,8 +300,8 @@ export const SequenceDiagramEditor: React.FC<EditorProps<SequenceDiagramModel>> 
                   value={message.type}
                   onChange={(e) => updateMessage(message.id, { type: e.target.value as 'solid' | 'dashed' })}
                 >
-                  <option value="solid">→ (Solid)</option>
-                  <option value="dashed">--› (Dashed)</option>
+                  <option style={styles.option} value="solid">→ (Solid)</option>
+                  <option style={styles.option} value="dashed">--› (Dashed)</option>
                 </select>
 
                 <select
@@ -306,7 +310,7 @@ export const SequenceDiagramEditor: React.FC<EditorProps<SequenceDiagramModel>> 
                   onChange={(e) => updateMessage(message.id, { to: e.target.value })}
                 >
                   {model.participants.map(p => (
-                    <option key={p.id} value={p.id}>{p.name}{p.alias ? ` (${p.alias})` : ''}</option>
+                    <option key={p.id} style={styles.option} value={p.id}>{p.name}{p.alias ? ` (${p.alias})` : ''}</option>
                   ))}
                 </select>
 

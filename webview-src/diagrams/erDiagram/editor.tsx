@@ -205,6 +205,10 @@ export const ERDiagramEditor: React.FC<EditorProps<ERDiagramModel>> = ({ model, 
       borderRadius: '4px',
       marginRight: '10px',
     },
+    option: {
+      backgroundColor: 'var(--vscode-dropdown-background)',
+      color: 'var(--vscode-dropdown-foreground)',
+    },
     card: {
       padding: '15px',
       marginBottom: '10px',
@@ -282,11 +286,11 @@ export const ERDiagramEditor: React.FC<EditorProps<ERDiagramModel>> = ({ model, 
                     value={attr.type}
                     onChange={(e) => updateAttribute(entity.id, attr.id, { type: e.target.value })}
                   >
-                    <option value="string">string</option>
-                    <option value="int">int</option>
-                    <option value="float">float</option>
-                    <option value="date">date</option>
-                    <option value="boolean">boolean</option>
+                    <option style={styles.option} value="string">string</option>
+                    <option style={styles.option} value="int">int</option>
+                    <option style={styles.option} value="float">float</option>
+                    <option style={styles.option} value="date">date</option>
+                    <option style={styles.option} value="boolean">boolean</option>
                   </select>
                   <input
                     style={{ ...styles.input, flex: 1 }}
@@ -354,7 +358,7 @@ export const ERDiagramEditor: React.FC<EditorProps<ERDiagramModel>> = ({ model, 
                   onChange={(e) => updateRelationship(rel.id, { sourceEntity: e.target.value })}
                 >
                   {model.entities.map(e => (
-                    <option key={e.id} value={e.name}>{e.name}</option>
+                    <option key={e.id} style={styles.option} value={e.name}>{e.name}</option>
                   ))}
                 </select>
 
@@ -363,9 +367,9 @@ export const ERDiagramEditor: React.FC<EditorProps<ERDiagramModel>> = ({ model, 
                   value={rel.relationshipType}
                   onChange={(e) => updateRelationship(rel.id, { relationshipType: e.target.value as any })}
                 >
-                  <option value="one-to-one">||--|| (One-to-One)</option>
-                  <option value="one-to-many">||--|{'{'} (One-to-Many)</option>
-                  <option value="many-to-many">{'}'}--|{'{'} (Many-to-Many)</option>
+                  <option style={styles.option} value="one-to-one">||--|| (One-to-One)</option>
+                  <option style={styles.option} value="one-to-many">||--|{'{'} (One-to-Many)</option>
+                  <option style={styles.option} value="many-to-many">{'}'}--|{'{'} (Many-to-Many)</option>
                 </select>
 
                 <select
@@ -374,7 +378,7 @@ export const ERDiagramEditor: React.FC<EditorProps<ERDiagramModel>> = ({ model, 
                   onChange={(e) => updateRelationship(rel.id, { targetEntity: e.target.value })}
                 >
                   {model.entities.map(e => (
-                    <option key={e.id} value={e.name}>{e.name}</option>
+                    <option key={e.id} style={styles.option} value={e.name}>{e.name}</option>
                   ))}
                 </select>
 
