@@ -66,16 +66,14 @@ export class ERDiagramHandler implements DiagramHandler<ERDiagramModel> {
       // 跳过空行和注释
       if (!trimmed || trimmed.startsWith('%%') || trimmed === 'erDiagram') return;
       
-      // 检测实体定义（包含大括号的行）
-      if (trimmed.includes('{')) {
-        const entityMatch = trimmed.match(/(\w+)\s*\{/);
-        if (entityMatch) {
-          currentEntity = {
-            id: `entity-${entities.length + 1}`,
-            name: entityMatch[1],
-            attributes: [],
-          };
-        }
+      // 检测实体定义（必须以单词开头，后跟 {）
+      const entityStartMatch = trimmed.match(/^(\w+)\s*\{/);
+      if (entityStartMatch) {
+        currentEntity = {
+          id: `entity-${entities.length + 1}`,
+          name: entityStartMatch[1],
+          attributes: [],
+        };
       } else if (trimmed.includes('}')) {
         // 实体定义结束
         if (currentEntity) {

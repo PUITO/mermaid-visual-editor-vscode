@@ -473,7 +473,7 @@ export function App() {
                 if (erHandler) {
                   const parsed = erHandler.parse(message.content);
                   setErModel(parsed);
-                  console.log('[App] Parsed ER diagram:', parsed.entities.length, 'entities');
+                  console.log('[App] Parsed ER diagram:', parsed.entities.length, 'entities,', parsed.relationships.length, 'relationships');
                 }
               } catch (err) {
                 console.error('[App] Failed to parse ER diagram:', err);
