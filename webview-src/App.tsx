@@ -572,6 +572,15 @@ export function App() {
     navigator.clipboard.writeText(previewContent);
   };
 
+  // 在 VS Code 编辑器中打开代码
+  const handleOpenInEditor = () => {
+    if (window.vscode) {
+      window.vscode.postMessage({
+        type: 'openInEditor',
+      });
+    }
+  };
+
   // 右键菜单处理
   const onNodeContextMenu = useCallback(
     (event: any, node: DiagramNode) => {
@@ -709,6 +718,7 @@ export function App() {
         <button onClick={autoLayout} title="重新排列节点">Auto Layout</button>
         <button onClick={handleCopySyntax}>Copy Syntax</button>
         <button onClick={handleExportMmd}>Export .mmd</button>
+        <button onClick={handleOpenInEditor} title="在 VS Code 编辑器中打开">Open in Editor</button>
         <button onClick={() => setPreviewVisible(!previewVisible)}>
           {previewVisible ? 'Hide Code' : 'Show Code'}
         </button>

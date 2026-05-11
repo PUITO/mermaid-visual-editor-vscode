@@ -46,6 +46,15 @@ export class MermaidEditorProvider implements vscode.CustomTextEditorProvider {
           break;
         }
         
+        case 'openInEditor': {
+          // 在 VS Code 文本编辑器中打开文件
+          await vscode.window.showTextDocument(document, {
+            viewColumn: vscode.ViewColumn.Beside,
+            preserveFocus: false
+          });
+          break;
+        }
+        
         case 'updateNode': {
           // Handle node updates if needed
           break;
