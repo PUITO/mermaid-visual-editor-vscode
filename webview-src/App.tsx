@@ -799,21 +799,107 @@ export function App() {
               )}
             </div>
           ) : diagramType === 'erDiagram' ? (
-            <ERDiagramEditor
-              model={erModel}
-              onChange={(newModel) => {
-                setErModel(newModel);
-                // TODO: 序列化并更新 previewContent
-              }}
-            />
+            // ER 图：左侧表单编辑，右侧 SVG 预览
+            <div style={{ display: 'flex', height: '100%', width: '100%' }}>
+              {/* 左侧：表单编辑器 */}
+              <div style={{ flex: 1, overflow: 'auto' }}>
+                <ERDiagramEditor
+                  model={erModel}
+                  onChange={(newModel) => {
+                    setErModel(newModel);
+                    // TODO: 序列化并更新 previewContent
+                  }}
+                />
+              </div>
+              
+              {/* 右侧：SVG 预览 */}
+              {previewVisible && (
+                <div style={{ 
+                  width: '50%',
+                  borderLeft: '1px solid var(--vscode-panel-border)',
+                  display: 'flex',
+                  flexDirection: 'column'
+                }}>
+                  <div style={{
+                    padding: '8px 12px',
+                    backgroundColor: 'var(--vscode-toolbar-background)',
+                    borderBottom: '1px solid var(--vscode-panel-border)',
+                    fontSize: '12px',
+                    fontWeight: 500
+                  }}>
+                    Preview
+                  </div>
+                  <div style={{ flex: 1, overflow: 'auto', padding: '20px' }}>
+                    {mermaidError ? (
+                      <div style={{ color: 'var(--vscode-errorForeground)' }}>
+                        {mermaidError}
+                      </div>
+                    ) : isRendering ? (
+                      <div style={{ textAlign: 'center', opacity: 0.6 }}>
+                        Rendering...
+                      </div>
+                    ) : mermaidSvg ? (
+                      <div dangerouslySetInnerHTML={{ __html: mermaidSvg }} />
+                    ) : (
+                      <div style={{ textAlign: 'center', opacity: 0.5 }}>
+                        No preview
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
           ) : diagramType === 'sequenceDiagram' ? (
-            <SequenceDiagramEditor
-              model={sequenceModel}
-              onChange={(newModel) => {
-                setSequenceModel(newModel);
-                // TODO: 序列化并更新 previewContent
-              }}
-            />
+            // 序列图：左侧表单编辑，右侧 SVG 预览
+            <div style={{ display: 'flex', height: '100%', width: '100%' }}>
+              {/* 左侧：表单编辑器 */}
+              <div style={{ flex: 1, overflow: 'auto' }}>
+                <SequenceDiagramEditor
+                  model={sequenceModel}
+                  onChange={(newModel) => {
+                    setSequenceModel(newModel);
+                    // TODO: 序列化并更新 previewContent
+                  }}
+                />
+              </div>
+              
+              {/* 右侧：SVG 预览 */}
+              {previewVisible && (
+                <div style={{ 
+                  width: '50%',
+                  borderLeft: '1px solid var(--vscode-panel-border)',
+                  display: 'flex',
+                  flexDirection: 'column'
+                }}>
+                  <div style={{
+                    padding: '8px 12px',
+                    backgroundColor: 'var(--vscode-toolbar-background)',
+                    borderBottom: '1px solid var(--vscode-panel-border)',
+                    fontSize: '12px',
+                    fontWeight: 500
+                  }}>
+                    Preview
+                  </div>
+                  <div style={{ flex: 1, overflow: 'auto', padding: '20px' }}>
+                    {mermaidError ? (
+                      <div style={{ color: 'var(--vscode-errorForeground)' }}>
+                        {mermaidError}
+                      </div>
+                    ) : isRendering ? (
+                      <div style={{ textAlign: 'center', opacity: 0.6 }}>
+                        Rendering...
+                      </div>
+                    ) : mermaidSvg ? (
+                      <div dangerouslySetInnerHTML={{ __html: mermaidSvg }} />
+                    ) : (
+                      <div style={{ textAlign: 'center', opacity: 0.5 }}>
+                        No preview
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
           ) : ['classDiagram', 'stateDiagram', 'gantt', 'pie', 'requirementDiagram', 'gitGraph', 'journey', 'graph'].includes(diagramType) ? (
             // 使用双栏编辑器：左侧 SVG 预览，右侧代码编辑
             <SplitEditor
