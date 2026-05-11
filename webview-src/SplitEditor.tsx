@@ -7,6 +7,8 @@ interface SplitEditorProps {
   isRendering?: boolean;
   error?: string | null;
   diagramType?: string;
+  showCode?: boolean; // 控制代码编辑器显示/隐藏
+  onToggleCode?: () => void; // 切换代码编辑器显示的回调
 }
 
 export function SplitEditor({
@@ -15,7 +17,9 @@ export function SplitEditor({
   onCodeChange,
   isRendering = false,
   error = null,
-  diagramType = 'diagram'
+  diagramType = 'diagram',
+  showCode = true, // 默认显示代码编辑器
+  onToggleCode
 }: SplitEditorProps) {
   const [scale, setScale] = useState(1);
   const [position, setPosition] = useState({ x: 0, y: 0 });
@@ -202,48 +206,51 @@ export function SplitEditor({
         </div>
       </div>
 
-      {/* 右侧：代码编辑器 */}
-      <div style={{
-        flex: 1,
-        display: 'flex',
-        flexDirection: 'column',
-        minWidth: '300px'
-      }}>
-        {/* 工具栏 */}
+      {/* 右侧：代码编辑器（条件显示） */}
+      {showCode && (
         <div style={{
-          padding: '8px 12px',
-          backgroundColor: 'var(--vscode-toolbar-background)',
-          borderBottom: '1px solid var(--vscode-panel-border)',
-          fontSize: '12px',
-          fontWeight: 500
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          minWidth: '300px',
+          borderLeft: '1px solid var(--vscode-panel-border)'
         }}>
-          Mermaid Code
-        </div>
+          {/* 工具栏 */}
+          <div style={{
+            padding: '8px 12px',
+            backgroundColor: 'var(--vscode-toolbar-background)',
+            borderBottom: '1px solid var(--vscode-panel-border)',
+            fontSize: '12px',
+            fontWeight: 500
+          }}>
+            Mermaid Code
+          </div>
 
-        {/* 代码编辑区 */}
-        <textarea
-          ref={textareaRef}
-          value={codeContent}
-          onChange={handleCodeChange}
-          spellCheck={false}
-          style={{
-            flex: 1,
-            width: '100%',
-            padding: '12px',
-            fontFamily: 'var(--vscode-editor-font-family, Consolas, "Courier New", monospace)',
-            fontSize: 'var(--vscode-editor-font-size, 14px)',
-            lineHeight: 'var(--vscode-editor-line-height, 1.5)',
-            backgroundColor: 'var(--vscode-editor-background)',
-            color: 'var(--vscode-editor-foreground)',
-            border: 'none',
-            outline: 'none',
-            resize: 'none',
-            tabSize: 4,
-            whiteSpace: 'pre',
-            overflow: 'auto'
-          }}
-        />
-      </div>
+          {/* 代码编辑区 */}
+          <textarea
+            ref={textareaRef}
+            value={codeContent}
+            onChange={handleCodeChange}
+            spellCheck={false}
+            style={{
+              flex: 1,
+              width: '100%',
+              padding: '12px',
+              fontFamily: 'var(--vscode-editor-font-family, Consolas, "Courier New", monospace)',
+              fontSize: 'var(--vscode-editor-font-size, 14px)',
+              lineHeight: 'var(--vscode-editor-line-height, 1.5)',
+              backgroundColor: 'var(--vscode-editor-background)',
+              color: 'var(--vscode-editor-foreground)',
+              border: 'none',
+              outline: 'none',
+              resize: 'none',
+              tabSize: 4,
+              whiteSpace: 'pre',
+              overflow: 'auto'
+            }}
+          />
+        </div>
+      )}
     </div>
   );
 }

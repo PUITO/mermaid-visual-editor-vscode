@@ -772,6 +772,7 @@ export function App() {
               isRendering={isRendering}
               error={mermaidError}
               diagramType={diagramType}
+              showCode={previewVisible}
             />
           ) : (
             <div style={{ padding: '20px', textAlign: 'center' }}>
@@ -800,21 +801,6 @@ export function App() {
             />
           )}
         </div>
-
-        {previewVisible && (
-          <div className="preview-panel">
-            <div className="preview-header">Mermaid Code</div>
-            <div className="preview-content">
-              {error ? (
-                <div className="error-message">{error}</div>
-              ) : (
-                <pre style={{ fontSize: '12px', whiteSpace: 'pre-wrap' }}>
-                  {previewContent}
-                </pre>
-              )}
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );
