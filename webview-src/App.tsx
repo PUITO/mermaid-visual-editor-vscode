@@ -15,6 +15,7 @@ import dagre from 'dagre';
 import mermaid from 'mermaid';
 
 import { CustomNode } from './CustomNode';
+import { CustomEdge } from './CustomEdge';
 import { ContextMenu } from './ContextMenu';
 import { SplitEditor } from './SplitEditor';
 import { useDiagramStore, DiagramNode, DiagramEdge } from './store';
@@ -37,6 +38,10 @@ declare global {
 
 const nodeTypes = {
   custom: CustomNode,
+};
+
+const edgeTypes = {
+  default: CustomEdge,
 };
 
 // VSCode 主题颜色接口
@@ -720,24 +725,79 @@ export function App() {
       <div className="main-content">
         <div className="canvas-container">
           {/* 根据图表类型渲染不同的编辑器 */}
-          {diagramType === 'flowchart' ? (
-            <ReactFlow
-              nodes={rfNodes}
-              edges={rfEdges}
-              onNodesChange={onNodesChange}
-              onEdgesChange={onEdgesChange}
-              onConnect={onConnect}
-              onDoubleClick={onPaneDoubleClick}
-              onNodeContextMenu={onNodeContextMenu}
-              onEdgeContextMenu={onEdgeContextMenu}
-              onPaneContextMenu={onPaneContextMenu}
-              nodeTypes={nodeTypes}
-              fitView
-              attributionPosition="bottom-right"
-            >
-              <Controls />
-              <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
-            </ReactFlow>
+          {diagramType === 'flowchart' || diagramType === 'graph' ? (
+            <div style={{ display: 'flex', height: '100%', width: '100%' }}>
+              {/* 左侧：React Flow 可视化编辑 */}
+              <div style={{ flex: previewVisible ? 1 : 1, transition: 'flex 0.3s ease' }}>
+                <ReactFlow
+                  nodes={rfNodes}
+                  edges={rfEdges}
+                  onNodesChange={onNodesChange}
+                  onEdgesChange={onEdgesChange}
+                  onConnect={onConnect}
+                  onDoubleClick={onPaneDoubleClick}
+                  onNodeContextMenu={onNodeContextMenu}
+                  onEdgeContextMenu={onEdgeContextMenu}
+                  onPaneContextMenu={onPaneContextMenu}
+                  nodeTypes={nodeTypes}
+                  edgeTypes={edgeTypes}
+                  fitView
+                  attributionPosition="bottom-right"
+                >
+                  <Controls />
+                  <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
+                </ReactFlow>
+              </div>
+              
+              {/* 右侧：代码编辑器（条件显示） */}
+              {previewVisible && (
+                <div style={{ 
+                  width: '400px', 
+                  borderLeft: '1px solid var(--vscode-panel-border)',
+                  display: 'flex',
+                  flexDirection: 'column'
+                }}>
+                  <div style={{
+                    padding: '8px 12px',
+                    backgroundColor: 'var(--vscode-toolbar-background)',
+                    borderBottom: '1px solid var(--vscode-panel-border)',
+                    fontSize: '12px',
+                    fontWeight: 500
+                  }}>
+                    Mermaid Code
+                  </div>
+                  <textarea
+                    value={previewContent}
+                    onChange={(e) => {
+                      setPreviewContent(e.target.value);
+                      if (window.vscode) {
+                        window.vscode.postMessage({
+                          type: 'updateContent',
+                          content: e.target.value,
+                        });
+                      }
+                    }}
+                    spellCheck={false}
+                    style={{
+                      flex: 1,
+                      width: '100%',
+                      padding: '12px',
+                      fontFamily: 'var(--vscode-editor-font-family, Consolas, "Courier New", monospace)',
+                      fontSize: 'var(--vscode-editor-font-size, 14px)',
+                      lineHeight: 'var(--vscode-editor-line-height, 1.5)',
+                      backgroundColor: 'var(--vscode-editor-background)',
+                      color: 'var(--vscode-editor-foreground)',
+                      border: 'none',
+                      outline: 'none',
+                      resize: 'none',
+                      tabSize: 4,
+                      whiteSpace: 'pre',
+                      overflow: 'auto'
+                    }}
+                  />
+                </div>
+              )}
+            </div>
           ) : diagramType === 'erDiagram' ? (
             <ERDiagramEditor
               model={erModel}

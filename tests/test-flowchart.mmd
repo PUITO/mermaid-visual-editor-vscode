@@ -7,6 +7,8 @@ flowchart TB
     Retry[重试]
     Start--> Decision
     Success--> End
+    Decision|是|--> Success
+    Decision|否|--> Error
     Error--> Retry
     Retry--> Decision
     style Start fill:#4CAF50,stroke:#388E3C,color:white
