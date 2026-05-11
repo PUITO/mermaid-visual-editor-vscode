@@ -59,15 +59,16 @@ export class SequenceDiagramHandler implements DiagramHandler<SequenceDiagramMod
       // 解析参与者
       const participantMatch = trimmed.match(/participant\s+(\w+)(?:\s+as\s+(.+))?/);
       if (participantMatch) {
-        const id = participantMatch[1];
+        const name = participantMatch[1];
         const alias = participantMatch[2]?.trim();
         
-        if (!participantMap.has(id)) {
-          participantMap.set(id, `participant-${participants.length + 1}`);
+        if (!participantMap.has(name)) {
+          const id = `participant-${participants.length + 1}`;
+          participantMap.set(name, id);
           participants.push({
-            id: participantMap.get(id)!,
-            name: id,
-            alias: alias,
+            id,
+            name,  // 保存原始名称
+            alias,  // 保存别名
           });
         }
         return;
@@ -76,15 +77,15 @@ export class SequenceDiagramHandler implements DiagramHandler<SequenceDiagramMod
       // 解析消息
       const messageMatch = trimmed.match(/(\w+)\s*(-+>|->>)\s*(\w+):\s*(.+)/);
       if (messageMatch) {
-        const from = participantMap.get(messageMatch[1]) || messageMatch[1];
-        const to = participantMap.get(messageMatch[3]) || messageMatch[3];
+        const fromName = messageMatch[1];
+        const toName = messageMatch[3];
         const arrow = messageMatch[2];
         const message = messageMatch[4];
         
         messages.push({
           id: `msg-${msgId++}`,
-          from,
-          to,
+          from: fromName,  // 使用原始名称
+          to: toName,      // 使用原始名称
           message,
           type: arrow.includes('--') ? 'dashed' : 'solid',
         });
@@ -110,9 +111,9 @@ export class SequenceDiagramHandler implements DiagramHandler<SequenceDiagramMod
     
     model.participants.forEach(participant => {
       if (participant.alias) {
-        mermaidCode += `    participant ${participant.id} as ${participant.alias}\n`;
+        mermaidCode += `    participant ${participant.name} as ${participant.alias}\n`;
       } else {
-        mermaidCode += `    participant ${participant.id}\n`;
+        mermaidCode += `    participant ${participant.name}\n`;
       }
     });
     
