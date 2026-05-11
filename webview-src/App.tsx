@@ -356,7 +356,7 @@ export function App() {
 
   // Mermaid 渲染：对于不支持可视化的图表类型，使用 Mermaid 直接渲染
   useEffect(() => {
-    const shouldRenderWithMermaid = ['classDiagram', 'stateDiagram', 'gantt', 'pie'].includes(diagramType);
+    const shouldRenderWithMermaid = ['classDiagram', 'stateDiagram', 'gantt', 'pie', 'requirementDiagram', 'gitGraph', 'journey'].includes(diagramType);
     
     if (!shouldRenderWithMermaid || !previewContent) {
       setMermaidSvg('');
