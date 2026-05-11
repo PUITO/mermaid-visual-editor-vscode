@@ -356,7 +356,7 @@ export function App() {
 
   // Mermaid 渲染：对于不支持可视化的图表类型，使用 Mermaid 直接渲染
   useEffect(() => {
-    const shouldRenderWithMermaid = ['classDiagram', 'stateDiagram', 'gantt', 'pie', 'requirementDiagram', 'gitGraph', 'journey'].includes(diagramType);
+    const shouldRenderWithMermaid = ['classDiagram', 'stateDiagram', 'gantt', 'pie', 'requirementDiagram', 'gitGraph', 'journey', 'erDiagram', 'sequenceDiagram'].includes(diagramType);
     
     if (!shouldRenderWithMermaid || !previewContent) {
       setMermaidSvg('');
@@ -812,7 +812,19 @@ export function App() {
                   model={erModel}
                   onChange={(newModel) => {
                     setErModel(newModel);
-                    // TODO: 序列化并更新 previewContent
+                    // 序列化并更新 previewContent
+                    const handler = diagramRegistry.getHandler('erDiagram');
+                    if (handler) {
+                      const mermaidCode = handler.toMermaid(newModel);
+                      setPreviewContent(mermaidCode);
+                      // 立即发送更新到 VS Code
+                      if (window.vscode) {
+                        window.vscode.postMessage({
+                          type: 'updateContent',
+                          content: mermaidCode,
+                        });
+                      }
+                    }
                   }}
                 />
               </div>
@@ -863,7 +875,19 @@ export function App() {
                   model={sequenceModel}
                   onChange={(newModel) => {
                     setSequenceModel(newModel);
-                    // TODO: 序列化并更新 previewContent
+                    // 序列化并更新 previewContent
+                    const handler = diagramRegistry.getHandler('sequenceDiagram');
+                    if (handler) {
+                      const mermaidCode = handler.toMermaid(newModel);
+                      setPreviewContent(mermaidCode);
+                      // 立即发送更新到 VS Code
+                      if (window.vscode) {
+                        window.vscode.postMessage({
+                          type: 'updateContent',
+                          content: mermaidCode,
+                        });
+                      }
+                    }
                   }}
                 />
               </div>
