@@ -117,7 +117,7 @@ export const ERDiagramEditor: React.FC<EditorProps<ERDiagramModel>> = ({ model, 
       id: `rel-${Date.now()}`,
       sourceEntity: model.entities[0].name,
       targetEntity: model.entities[1].name,
-      relationshipType: 'one-to-many',
+      symbol: '||--|{',
     };
     onChange({
       ...model,
@@ -364,12 +364,14 @@ export const ERDiagramEditor: React.FC<EditorProps<ERDiagramModel>> = ({ model, 
 
                 <select
                   style={styles.select}
-                  value={rel.relationshipType}
-                  onChange={(e) => updateRelationship(rel.id, { relationshipType: e.target.value as any })}
+                  value={rel.symbol}
+                  onChange={(e) => updateRelationship(rel.id, { symbol: e.target.value })}
                 >
-                  <option style={styles.option} value="one-to-one">||--|| (One-to-One)</option>
-                  <option style={styles.option} value="one-to-many">||--|{'{'} (One-to-Many)</option>
-                  <option style={styles.option} value="many-to-many">{'}'}--|{'{'} (Many-to-Many)</option>
+                  <option style={styles.option} value="||--||">||--|| (One-to-One)</option>
+                  <option style={styles.option} value="||--|{">||--|{'{'} (One-to-Many)</option>
+                  <option style={styles.option} value="||--o{">||--o{'{'} (One-to-Zero-or-More)</option>
+                  <option style={styles.option} value="}|--|{">{'}'}--|{'{'} (Many-to-Many)</option>
+                  <option style={styles.option} value="}|--o{">{'}'}--o{'{'} (Many-to-Zero-or-More)</option>
                 </select>
 
                 <select

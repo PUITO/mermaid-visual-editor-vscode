@@ -28,7 +28,7 @@ export interface Relationship {
   id: string;
   sourceEntity: string;
   targetEntity: string;
-  relationshipType: 'one-to-one' | 'one-to-many' | 'many-to-many';
+  symbol: string; // 完整的符号，如 ||--||, ||--|{, ||--o{, }|--|{ 等
   label?: string;
 }
 
@@ -94,28 +94,20 @@ export class ERDiagramHandler implements DiagramHandler<ERDiagramModel> {
         }
       } else {
         // 解析关系（支持多种符号：||--||, ||--|{, ||--o{, }|--|{ 等）
-        const relMatch = trimmed.match(/(\w+)\s*(\|?[{}o]?--\|?[{}o]?)\s*(\w+)(?:\s*:\s*"([^"]+)")?/);
+        const relMatch = trimmed.match(/(\w+)\s+([}|o|]+)--([{|o|]+)\s+(\w+)(?:\s*:\s*"([^"]+)")?/);
         if (relMatch) {
           const source = relMatch[1];
-          const target = relMatch[3];
-          const symbol = relMatch[2];
-          const label = relMatch[4];
-          
-          // 根据符号判断关系类型
-          let relationshipType: 'one-to-one' | 'one-to-many' | 'many-to-many' = 'one-to-one';
-          if (symbol.includes('{') && !symbol.startsWith('{')) {
-            // 目标端是多（如 ||--|{, ||--o{）
-            relationshipType = 'one-to-many';
-          } else if (symbol.startsWith('{') || (symbol.includes('{') && symbol.indexOf('{') < symbol.lastIndexOf('{'))) {
-            // 两端都是多（如 }|--|{）
-            relationshipType = 'many-to-many';
-          }
+          const target = relMatch[4];
+          const leftSymbol = relMatch[2];
+          const rightSymbol = relMatch[3];
+          const label = relMatch[5];
+          const symbol = `${leftSymbol}--${rightSymbol}`;
           
           relationships.push({
             id: `rel-${relId++}`,
             sourceEntity: source,
             targetEntity: target,
-            relationshipType,
+            symbol,
             label,
           });
         }
@@ -130,13 +122,7 @@ export class ERDiagramHandler implements DiagramHandler<ERDiagramModel> {
     
     // 先输出关系
     model.relationships.forEach(rel => {
-      let relSymbol = '||--||';
-      if (rel.relationshipType === 'one-to-many') {
-        relSymbol = '||--|{';
-      } else if (rel.relationshipType === 'many-to-many') {
-        relSymbol = '}|--|{';
-      }
-      mermaidCode += `    ${rel.sourceEntity} ${relSymbol} ${rel.targetEntity}`;
+      mermaidCode += `    ${rel.sourceEntity} ${rel.symbol} ${rel.targetEntity}`;
       if (rel.label) {
         mermaidCode += ` : "${rel.label}"`;
       }
