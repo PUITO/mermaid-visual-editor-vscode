@@ -1,0 +1,74 @@
+flowchart TD
+    %% 样式定义
+    classDef req fill:#e6f7ff,stroke:#1890ff,stroke-width:2px
+    classDef agent fill:#f0f2ff,stroke:#722ed1,stroke-width:2px
+    classDef skill fill:#fff7e6,stroke:#fa8c16,stroke-width:2px
+    classDef mcp fill:#fef0f0,stroke:#f5222d,stroke-width:2px
+    classDef lc fill:#f0fff4,stroke:#52c41a,stroke-width:2px
+
+    %% 入口
+    A[用户/业务原始需求]
+
+    %% 1.需求分析层
+    subgraph 第一层_需求分析
+    B1[需求采集接入]
+    B2[意图识别&语义解析]
+    B3[任务拆解&子任务拆分]
+    B4[业务约束&规则校验]
+    B5[输出结构化任务工单]
+    end
+    class 第一层_需求分析 req
+
+    %% 2.智能体Agent层
+    subgraph 第二层_智能体Agent
+    C1[全局主智能体]
+    C2[任务编排&状态机管理]
+    C3[多子Agent路由分发]
+    C4[决策调度&异常兜底]
+    C5[结果聚合&会话管控]
+    end
+    class 第二层_智能体Agent agent
+
+    %% 3.Skill技能层
+    subgraph 第三层_Skill原子技能池
+    D1[检索Skill]
+    D2[计算/推理Skill]
+    D3[接口调用Skill]
+    D4[文案生成Skill]
+    D5[数据校验/格式化Skill]
+    D6[技能注册&动态路由]
+    end
+    class 第三层_Skill原子技能池 skill
+
+    %% 4.MCP模型通信协议层
+    subgraph 第四层_MCP统一通信中台
+    E1[统一消息报文封装]
+    E2[上下文透传&会话隔离]
+    E3[多模型路由&负载均衡]
+    E4[权限管控&限流熔断]
+    E5[协议适配&消息中转]
+    end
+    class 第四层_MCP统一通信中台 mcp
+
+    %% 5.LangChain底座层
+    subgraph 第五层_LangChain基础底座
+    F1[Prompt模板管理]
+    F2[Memory长短记忆管理]
+    F3[Chain串行/并行链路编排]
+    F4[向量库&RAG检索底座]
+    F5[LLM模型底层调用]
+    end
+    class 第五层_LangChain基础底座 lc
+
+    %% 正向流程
+    A --> B1 --> B2 --> B3 --> B4 --> B5
+    B5 --> C1 --> C2 --> C3 --> C4
+    C4 --> D6 --> D1 & D2 & D3 & D4 & D5
+    D1 & D2 & D3 & D4 & D5 --> E1 --> E2 --> E3 --> E4 --> E5
+    E5 --> F1 --> F2 --> F3 --> F4 --> F5
+
+    %% 回流闭环
+    F5 --> E5
+    E5 --> C5
+    C5 --> B4
+    B4 --> G[最终响应输出]
